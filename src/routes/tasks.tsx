@@ -1,7 +1,48 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
+
+import { useEffect, useMemo, useState } from 'react'
 
 import type { tasks } from '#/db/schema'
+
+import { PageShell } from '@/components/PageShell'
+import { NewTaskDialog } from '@/components/tasks/NewTaskDialog'
+import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
+
+import { CalendarNav } from '@/components/tasks/CalendarNav'
+
+import { DayTasksView } from '@/components/tasks/DayTasksView'
+
+import { MonthCalendarView } from '@/components/tasks/MonthCalendarView'
+
+import type { TaskListActions } from '@/components/tasks/TaskListItem'
+
+import { TasksViewModeMenu } from '@/components/tasks/TasksViewModeMenu'
+
+import { UnscheduledTasksPanel } from '@/components/tasks/UnscheduledTasksPanel'
+
+import { WeekCalendarView } from '@/components/tasks/WeekCalendarView'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+import { Button } from '@/components/ui/button'
+
+import { Card, CardContent } from '@/components/ui/card'
+import { Plus } from 'lucide-react'
+
+import { toDatetimeLocalValue } from '@/lib/dates'
+import { cn } from '@/lib/utils'
+
+import {
+  formatDayTitle,
+  formatMonthYear,
+  formatWeekRange,
+  partitionTasks,
+} from '@/lib/task-calendar'
+import {
+  tasksSearchSchema,
+  useTasksUrlState,
+} from '@/lib/tasks-search-params'
+
 import {
   createTask,
   deleteTask,
@@ -9,20 +50,27 @@ import {
   setTaskCompleted,
   updateTask,
 } from '#/server/tasks'
-import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/tasks')({
+  validateSearch: tasksSearchSchema,
   beforeLoad: async () => {
+    const { getSession } = await import('#/server/session')
+
     const session = await getSession()
+
     if (!session?.user) {
       throw redirect({
         to: '/signin',
+
         search: { redirect: '/tasks' },
       })
     }
+
     return { session }
   },
+
   loader: () => listTasks(),
+
   component: TasksPage,
 })
 
@@ -30,12 +78,73 @@ type Task = typeof tasks.$inferSelect
 
 function TasksPage() {
   const router = useRouter()
+
   const taskList = Route.useLoaderData()
+
+  const {
+    viewMode,
+    setViewMode,
+    selectedTaskId,
+    viewDay,
+    viewWeekStart,
+    viewYear,
+    viewMonth,
+    goToPreviousPeriod,
+    goToNextPeriod,
+    openTaskId,
+    closeTaskId,
+  } = useTasksUrlState()
+
   const [newTitle, setNewTitle] = useState('')
+
+  const [newStartAt, setNewStartAt] = useState('')
+
+  const [newEndAt, setNewEndAt] = useState('')
+
   const [editingId, setEditingId] = useState<number | null>(null)
+
   const [editTitle, setEditTitle] = useState('')
+
+  const [editStartAt, setEditStartAt] = useState('')
+
+  const [editEndAt, setEditEndAt] = useState('')
+
   const [pending, setPending] = useState(false)
+
   const [error, setError] = useState<string | null>(null)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+
+  const { scheduled, unscheduled } = useMemo(
+    () => partitionTasks(taskList),
+
+    [taskList],
+  )
+
+  const selectedTask = useMemo(
+    () =>
+      selectedTaskId == null
+        ? null
+        : (taskList.find((t) => t.id === selectedTaskId) ?? null),
+    [selectedTaskId, taskList],
+  )
+
+  const detailDialogOpen = selectedTask != null
+
+  useEffect(() => {
+    if (selectedTaskId != null && selectedTask == null) {
+      closeTaskId()
+    }
+  }, [selectedTaskId, selectedTask, closeTaskId])
+
+  function openTaskDetail(task: Task) {
+    clearEditForm()
+    openTaskId(task.id)
+  }
+
+  function closeTaskDetail() {
+    clearEditForm()
+    closeTaskId()
+  }
 
   async function refresh() {
     await router.invalidate()
@@ -43,9 +152,12 @@ function TasksPage() {
 
   async function runAction(action: () => Promise<unknown>) {
     setPending(true)
+
     setError(null)
+
     try {
       await action()
+
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -54,155 +166,252 @@ function TasksPage() {
     }
   }
 
+  function clearNewForm() {
+    setNewTitle('')
+
+    setNewStartAt('')
+
+    setNewEndAt('')
+  }
+
+  function clearEditForm() {
+    setEditingId(null)
+
+    setEditTitle('')
+
+    setEditStartAt('')
+
+    setEditEndAt('')
+  }
+
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault()
+
     const title = newTitle.trim()
+
     if (!title) return
+
     await runAction(async () => {
-      await createTask({ data: { title } })
-      setNewTitle('')
+      await createTask({
+        data: {
+          title,
+
+          taskStartAt: newStartAt || null,
+
+          taskEndsAt: newEndAt || null,
+        },
+      })
+
+      clearNewForm()
+      setAddDialogOpen(false)
     })
   }
 
-  async function handleToggle(task: Task) {
+  async function handleToggle(task: Task, checked: boolean) {
     await runAction(() =>
-      setTaskCompleted({ data: { id: task.id, completed: !task.completed } }),
+      setTaskCompleted({ data: { id: task.id, completed: checked } }),
     )
   }
 
   async function handleSaveEdit(id: number) {
     const title = editTitle.trim()
+
     if (!title) return
+
     await runAction(async () => {
-      await updateTask({ data: { id, title } })
-      setEditingId(null)
-      setEditTitle('')
+      await updateTask({
+        data: {
+          id,
+
+          title,
+
+          taskStartAt: editStartAt || null,
+
+          taskEndsAt: editEndAt || null,
+        },
+      })
+
+      clearEditForm()
     })
   }
 
   async function handleDelete(id: number) {
-    await runAction(() => deleteTask({ data: { id } }))
+    await runAction(async () => {
+      await deleteTask({ data: { id } })
+      if (selectedTaskId === id) {
+        closeTaskDetail()
+      }
+    })
   }
 
   function startEdit(task: Task) {
     setEditingId(task.id)
+
     setEditTitle(task.title)
+
+    setEditStartAt(toDatetimeLocalValue(task.taskStartAt))
+
+    setEditEndAt(toDatetimeLocalValue(task.taskEndsAt))
   }
 
+  const listActions: TaskListActions = {
+    pending,
+
+    editingId,
+
+    editTitle,
+
+    editStartAt,
+
+    editEndAt,
+
+    onToggle: handleToggle,
+
+    onStartEdit: startEdit,
+
+    onSaveEdit: handleSaveEdit,
+
+    onCancelEdit: clearEditForm,
+
+    onDelete: handleDelete,
+
+    onEditTitleChange: setEditTitle,
+
+    onEditStartChange: setEditStartAt,
+
+    onEditEndChange: setEditEndAt,
+  }
+
+  const periodTitle =
+    viewMode === 'monthly'
+      ? formatMonthYear(viewYear, viewMonth)
+      : viewMode === 'weekly'
+        ? formatWeekRange(viewWeekStart)
+        : formatDayTitle(viewDay)
+
+  const previousLabel =
+    viewMode === 'monthly'
+      ? 'Previous month'
+      : viewMode === 'weekly'
+        ? 'Previous week'
+        : 'Previous day'
+
+  const nextLabel =
+    viewMode === 'monthly'
+      ? 'Next month'
+      : viewMode === 'weekly'
+        ? 'Next week'
+        : 'Next day'
+
   return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in rounded-[2rem] px-6 py-8 sm:px-10">
-        <p className="island-kicker mb-2">TaskFlux</p>
-        <h1 className="mb-6 text-3xl font-bold tracking-tight text-[var(--sea-ink)]">
-          Tasks
-        </h1>
+    <PageShell full fluid className="px-0 py-2 md:py-3">
+      <TaskDetailDialog
+        task={selectedTask}
+        open={detailDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeTaskDetail()
+        }}
+        pending={pending}
+        error={detailDialogOpen && !addDialogOpen ? error : null}
+        isEditing={selectedTask != null && editingId === selectedTask.id}
+        editTitle={editTitle}
+        editStartAt={editStartAt}
+        editEndAt={editEndAt}
+        onStartEdit={() => selectedTask && startEdit(selectedTask)}
+        onSaveEdit={() => selectedTask && handleSaveEdit(selectedTask.id)}
+        onCancelEdit={clearEditForm}
+        onDelete={() => selectedTask && handleDelete(selectedTask.id)}
+        onEditTitleChange={setEditTitle}
+        onEditStartChange={setEditStartAt}
+        onEditEndChange={setEditEndAt}
+      />
 
-        <form onSubmit={handleAdd} className="mb-6 flex flex-wrap gap-2">
-          <input
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="New task..."
-            disabled={pending}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-white/60 px-4 py-2.5 text-[var(--sea-ink)] outline-none focus:border-[rgba(50,143,151,0.5)]"
-          />
-          <button
-            type="submit"
-            disabled={pending || !newTitle.trim()}
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] transition hover:bg-[rgba(79,184,178,0.24)] disabled:opacity-50"
-          >
-            Add
-          </button>
-        </form>
+      <NewTaskDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        title={newTitle}
+        startAt={newStartAt}
+        endAt={newEndAt}
+        pending={pending}
+        error={addDialogOpen ? error : null}
+        onTitleChange={setNewTitle}
+        onStartChange={setNewStartAt}
+        onEndChange={setNewEndAt}
+        onSubmit={handleAdd}
+      />
 
-        {error ? (
-          <p className="mb-4 rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700">
-            {error}
-          </p>
-        ) : null}
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden lg:flex-row lg:items-stretch">
+        <UnscheduledTasksPanel
+          tasks={unscheduled}
+          actions={listActions}
+          className="min-h-0 max-h-48 shrink-0 overflow-hidden lg:max-h-none lg:self-stretch"
+        />
 
-        {taskList.length === 0 ? (
-          <p className="text-sm text-[var(--sea-ink-soft)]">
-            No tasks yet. Add one above.
-          </p>
-        ) : (
-          <ul className="m-0 flex list-none flex-col gap-2 p-0">
-            {taskList.map((task) => (
-              <li
-                key={task.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--line)] bg-white/40 px-4 py-3"
-              >
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  disabled={pending}
-                  onChange={() => handleToggle(task)}
-                  className="h-4 w-4 accent-[var(--lagoon-deep)]"
-                  aria-label={
-                    task.completed ? 'Mark incomplete' : 'Mark complete'
-                  }
+        <Card className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 overflow-hidden py-0">
+          <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden py-4">
+            {error && !addDialogOpen && !detailDialogOpen ? (
+              <Alert variant="destructive" className="shrink-0">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <div className="relative z-30 flex shrink-0 items-center gap-3 overflow-visible">
+              <TasksViewModeMenu value={viewMode} onChange={setViewMode} />
+
+              <div className="flex min-w-0 flex-1 justify-center">
+                <CalendarNav
+                  title={periodTitle}
+                  onPrevious={goToPreviousPeriod}
+                  onNext={goToNextPeriod}
+                  previousLabel={previousLabel}
+                  nextLabel={nextLabel}
                 />
+              </div>
 
-                {editingId === task.id ? (
-                  <>
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      disabled={pending}
-                      className="min-w-0 flex-1 rounded-lg border border-[var(--line)] bg-white/80 px-3 py-1.5 text-[var(--sea-ink)] outline-none"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => handleSaveEdit(task.id)}
-                      className="text-sm font-semibold text-[var(--lagoon-deep)]"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => {
-                        setEditingId(null)
-                        setEditTitle('')
-                      }}
-                      className="text-sm text-[var(--sea-ink-soft)]"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <span
-                      className={`min-w-0 flex-1 text-[var(--sea-ink)] ${task.completed ? 'line-through opacity-60' : ''}`}
-                    >
-                      {task.title}
-                    </span>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => startEdit(task)}
-                      className="text-sm font-semibold text-[var(--lagoon-deep)]"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => handleDelete(task.id)}
-                      className="text-sm text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+              <Button
+                type="button"
+                size="icon"
+                aria-label="Add task"
+                onClick={() => setAddDialogOpen(true)}
+              >
+                <Plus className="size-5" />
+              </Button>
+            </div>
+
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              {viewMode === 'monthly' ? (
+                <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                <MonthCalendarView
+                  year={viewYear}
+                  month={viewMonth}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+                </div>
+              ) : null}
+
+              {viewMode === 'weekly' ? (
+                <WeekCalendarView
+                  weekStart={viewWeekStart}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+              ) : null}
+
+              {viewMode === 'daily' ? (
+                <DayTasksView
+                  day={viewDay}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+              ) : null}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageShell>
   )
 }

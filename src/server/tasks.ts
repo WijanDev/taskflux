@@ -2,8 +2,32 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, desc, eq } from 'drizzle-orm'
 
 import { tasks } from '#/db/schema'
+import {
+  assertValidTaskRange,
+  parseOptionalTimestamp,
+} from '#/lib/dates'
 
 import { requireUserId } from '#/server/auth'
+
+type TaskScheduleInput = {
+  title: string
+  taskStartAt?: string | null
+  taskEndsAt?: string | null
+}
+
+type TaskUpdateInput = TaskScheduleInput & {
+  id: number
+}
+
+function parseScheduleFields(data: {
+  taskStartAt?: string | null
+  taskEndsAt?: string | null
+}) {
+  const taskStartAt = parseOptionalTimestamp(data.taskStartAt)
+  const taskEndsAt = parseOptionalTimestamp(data.taskEndsAt)
+  assertValidTaskRange(taskStartAt, taskEndsAt)
+  return { taskStartAt, taskEndsAt }
+}
 
 async function db() {
   const { getDb } = await import('#/db/index.server')
@@ -20,38 +44,49 @@ export const listTasks = createServerFn({ method: 'GET' }).handler(async () => {
 })
 
 export const createTask = createServerFn({ method: 'POST' })
-  .inputValidator((data: { title: string }) => {
+  .inputValidator((data: TaskScheduleInput) => {
     const title = data.title?.trim()
     if (!title) throw new Error('Title is required')
-    return { title }
+    const schedule = parseScheduleFields(data)
+    return { title, ...schedule }
   })
   .handler(async ({ data }) => {
     const userId = await requireUserId()
+    const now = new Date()
     const [task] = await (await db())
       .insert(tasks)
       .values({
         userId,
         title: data.title,
         completed: false,
-        createdAt: new Date(),
+        createdAt: now,
+        updatedAt: now,
+        taskStartAt: data.taskStartAt,
+        taskEndsAt: data.taskEndsAt,
       })
       .returning()
     return task
   })
 
 export const updateTask = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: number; title: string }) => {
+  .inputValidator((data: TaskUpdateInput) => {
     const title = data.title?.trim()
     if (!title) throw new Error('Title is required')
     if (!Number.isInteger(data.id)) throw new Error('Invalid task id')
-    return { id: data.id, title }
+    const schedule = parseScheduleFields(data)
+    return { id: data.id, title, ...schedule }
   })
   .handler(async ({ data }) => {
     const userId = await requireUserId()
     const connection = await db()
     await connection
       .update(tasks)
-      .set({ title: data.title })
+      .set({
+        title: data.title,
+        taskStartAt: data.taskStartAt,
+        taskEndsAt: data.taskEndsAt,
+        updatedAt: new Date(),
+      })
       .where(and(eq(tasks.id, data.id), eq(tasks.userId, userId)))
 
     const [task] = await connection
@@ -73,7 +108,7 @@ export const setTaskCompleted = createServerFn({ method: 'POST' })
     const connection = await db()
     await connection
       .update(tasks)
-      .set({ completed: data.completed })
+      .set({ completed: data.completed, updatedAt: new Date() })
       .where(and(eq(tasks.id, data.id), eq(tasks.userId, userId)))
 
     const [task] = await connection

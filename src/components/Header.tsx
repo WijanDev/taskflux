@@ -1,7 +1,11 @@
 import { Link, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 
+import { Container } from '@/components/Container'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { authClient } from '#/lib/auth-client'
+import { cn } from '@/lib/utils'
+
 import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
@@ -20,86 +24,99 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
-      <nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
-        <h2 className="m-0 flex-shrink-0 text-base font-semibold tracking-tight">
+    <header className="z-50 shrink-0 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <Container
+        fluid
+        className="flex items-center justify-between gap-4 py-3 sm:py-4"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
+            className="flex shrink-0 items-center gap-2 pr-2 text-sm font-semibold tracking-tight text-foreground no-underline sm:pr-4"
           >
-            <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,#56c6be,#7ed3bf)]" />
+            <span className="size-2 rounded-full bg-primary shadow-[0_0_12px_var(--color-primary)]" />
             TaskFlux
           </Link>
-        </h2>
 
-        <div className="order-3 flex w-full flex-wrap items-center gap-x-4 gap-y-1 pb-1 text-sm font-semibold sm:order-none sm:w-auto sm:flex-nowrap sm:pb-0">
-          <Link
-            to="/"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/tasks"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Tasks
-          </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
-          </Link>
+          <nav className="flex min-w-0 items-center gap-0.5 sm:gap-1">
+            <Link
+              to="/"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              Home
+            </Link>
+            <Link
+              to="/tasks"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              Tasks
+            </Link>
+            <Link
+              to="/about"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              About
+            </Link>
+          </nav>
         </div>
 
-        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           {isPending ? (
-            <span className="hidden text-sm text-[var(--sea-ink-soft)] sm:inline">
-              …
-            </span>
+            <span className="text-sm text-muted-foreground">…</span>
           ) : session?.user ? (
             <>
-              <span className="hidden max-w-[10rem] truncate text-sm text-[var(--sea-ink-soft)] sm:inline">
+              <span className="hidden max-w-48 truncate text-sm text-muted-foreground md:inline">
                 {session.user.name ?? session.user.email}
               </span>
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleSignOut}
                 disabled={signingOut}
-                className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] transition hover:bg-[var(--link-bg-hover)] disabled:opacity-50"
               >
                 Sign out
-              </button>
+              </Button>
             </>
           ) : (
             <>
               <Link
                 to="/signin"
-                className="nav-link"
-                activeProps={{ className: 'nav-link is-active' }}
+                className={cn(buttonVariants({ variant: 'ghost' }))}
+                activeProps={{
+                  className: cn(buttonVariants({ variant: 'secondary' })),
+                }}
               >
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-3 py-1.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:bg-[rgba(79,184,178,0.24)]"
+                className={cn(buttonVariants())}
                 activeProps={{
-                  className:
-                    'rounded-full border border-[rgba(50,143,151,0.45)] bg-[rgba(79,184,178,0.24)] px-3 py-1.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline',
+                  className: cn(buttonVariants()),
                 }}
               >
                 Sign up
               </Link>
             </>
           )}
-
           <ThemeToggle />
         </div>
-      </nav>
+      </Container>
     </header>
   )
 }

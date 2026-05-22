@@ -2,13 +2,13 @@ import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
 import AuthForm from '#/components/AuthForm'
 import { authClient } from '#/lib/auth-client'
-import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/signin')({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: typeof search.redirect === 'string' ? search.redirect : '/tasks',
   }),
   beforeLoad: async () => {
+    const { getSession } = await import('#/server/session')
     const session = await getSession()
     if (session?.user) {
       throw redirect({ to: '/tasks' })
@@ -25,6 +25,7 @@ function SignInPage() {
     <AuthForm
       mode="signin"
       title="Sign in"
+      description="Welcome back. Enter your credentials to continue."
       submitLabel="Sign in"
       alternate={{
         label: "Don't have an account?",

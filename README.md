@@ -56,7 +56,14 @@ This project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) an
 
 1. Install Wrangler: `npm install -g wrangler`
 2. Authenticate: `wrangler login`
-3. Deploy: `npx wrangler deploy`
+3. Copy `.dev.vars.example` to `.dev.vars` and set `BETTER_AUTH_SECRET` (32+ characters)
+4. Create D1 (once): `wrangler d1 create taskflux` — copy the `database_id` into `wrangler.jsonc`
+5. Apply migrations: `bun run db:migrate` (local) or `bun run db:migrate:remote` (production)
+6. Deploy: `bun run deploy` (runs remote migrations, then deploys)
+
+For production, set the auth secret: `wrangler secret put BETTER_AUTH_SECRET` and set `BETTER_AUTH_URL` in `wrangler.jsonc` `vars` to your public URL.
+
+`wrangler deploy` does **not** apply D1 migrations by itself. Use `db:migrate:remote` before the first deploy and after adding new migration files.
 
 For production env vars, run `wrangler secret put MY_VAR` for each secret listed in `.env.example`. Public (non-secret) vars go in `wrangler.jsonc` under `vars`.
 

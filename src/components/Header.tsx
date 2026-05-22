@@ -24,58 +24,68 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <Container className="flex flex-wrap items-center gap-3 py-4">
-        <Link
-          to="/"
-          className="mr-2 flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground no-underline"
-        >
-          <span className="size-2 rounded-full bg-primary shadow-[0_0_12px_var(--color-primary)]" />
-          TaskFlux
-        </Link>
-
-        <nav className="flex flex-wrap items-center gap-1">
+    <header className="z-50 shrink-0 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <Container
+        fluid
+        className="flex items-center justify-between gap-4 py-3 sm:py-4"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
           <Link
             to="/"
-            className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
-            activeProps={{
-              className: cn(buttonVariants({ variant: 'secondary', size: 'sm' })),
-            }}
+            className="flex shrink-0 items-center gap-2 pr-2 text-sm font-semibold tracking-tight text-foreground no-underline sm:pr-4"
           >
-            Home
+            <span className="size-2 rounded-full bg-primary shadow-[0_0_12px_var(--color-primary)]" />
+            TaskFlux
           </Link>
-          <Link
-            to="/tasks"
-            className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
-            activeProps={{
-              className: cn(buttonVariants({ variant: 'secondary', size: 'sm' })),
-            }}
-          >
-            Tasks
-          </Link>
-          <Link
-            to="/about"
-            className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
-            activeProps={{
-              className: cn(buttonVariants({ variant: 'secondary', size: 'sm' })),
-            }}
-          >
-            About
-          </Link>
-        </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+          <nav className="flex min-w-0 items-center gap-0.5 sm:gap-1">
+            <Link
+              to="/"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              Home
+            </Link>
+            <Link
+              to="/tasks"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              Tasks
+            </Link>
+            <Link
+              to="/about"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+              activeProps={{
+                className: cn(
+                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                ),
+              }}
+            >
+              About
+            </Link>
+          </nav>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           {isPending ? (
             <span className="text-sm text-muted-foreground">…</span>
           ) : session?.user ? (
             <>
-              <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:inline">
+              <span className="hidden max-w-48 truncate text-sm text-muted-foreground md:inline">
                 {session.user.name ?? session.user.email}
               </span>
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={handleSignOut}
                 disabled={signingOut}
               >
@@ -86,20 +96,18 @@ export default function Header() {
             <>
               <Link
                 to="/signin"
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+                className={cn(buttonVariants({ variant: 'ghost' }))}
                 activeProps={{
-                  className: cn(
-                    buttonVariants({ variant: 'secondary', size: 'sm' }),
-                  ),
+                  className: cn(buttonVariants({ variant: 'secondary' })),
                 }}
               >
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className={cn(buttonVariants({ size: 'sm' }))}
+                className={cn(buttonVariants())}
                 activeProps={{
-                  className: cn(buttonVariants({ size: 'sm' })),
+                  className: cn(buttonVariants()),
                 }}
               >
                 Sign up

@@ -77,11 +77,42 @@
 }
 
 @layer base {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color var(--theme-transition-duration, 200ms) ease,
+      color var(--theme-transition-duration, 200ms) ease,
+      border-color var(--theme-transition-duration, 200ms) ease,
+      outline-color var(--theme-transition-duration, 200ms) ease,
+      fill var(--theme-transition-duration, 200ms) ease,
+      stroke var(--theme-transition-duration, 200ms) ease,
+      box-shadow var(--theme-transition-duration, 200ms) ease !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.theme-transition,
+    html.theme-transition *,
+    html.theme-transition *::before,
+    html.theme-transition *::after {
+      transition: none !important;
+    }
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
   }
 }

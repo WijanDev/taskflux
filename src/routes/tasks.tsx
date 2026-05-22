@@ -1,7 +1,21 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import type { tasks } from '#/db/schema'
+import { PageShell } from '@/components/PageShell'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 import {
   createTask,
   deleteTask,
@@ -9,10 +23,10 @@ import {
   setTaskCompleted,
   updateTask,
 } from '#/server/tasks'
-import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/tasks')({
   beforeLoad: async () => {
+    const { getSession } = await import('#/server/session')
     const session = await getSession()
     if (!session?.user) {
       throw redirect({
@@ -36,6 +50,8 @@ function TasksPage() {
   const [editTitle, setEditTitle] = useState('')
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const completedCount = taskList.filter((t) => t.completed).length
 
   async function refresh() {
     await router.invalidate()
@@ -64,9 +80,9 @@ function TasksPage() {
     })
   }
 
-  async function handleToggle(task: Task) {
+  async function handleToggle(task: Task, checked: boolean) {
     await runAction(() =>
-      setTaskCompleted({ data: { id: task.id, completed: !task.completed } }),
+      setTaskCompleted({ data: { id: task.id, completed: checked } }),
     )
   }
 
@@ -90,119 +106,189 @@ function TasksPage() {
   }
 
   return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in rounded-[2rem] px-6 py-8 sm:px-10">
-        <p className="island-kicker mb-2">TaskFlux</p>
-        <h1 className="mb-6 text-3xl font-bold tracking-tight text-[var(--sea-ink)]">
-          Tasks
-        </h1>
+    <PageShell full className="py-8 md:py-10">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+        <aside className="shrink-0 lg:w-52">
+          <div className="lg:sticky lg:top-24">
+            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              Tasks
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {taskList.length === 0
+                ? 'Nothing here yet.'
+                : `${completedCount} of ${taskList.length} done`}
+            </p>
+          </div>
+        </aside>
 
-        <form onSubmit={handleAdd} className="mb-6 flex flex-wrap gap-2">
-          <input
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="New task..."
-            disabled={pending}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-white/60 px-4 py-2.5 text-[var(--sea-ink)] outline-none focus:border-[rgba(50,143,151,0.5)]"
-          />
-          <button
-            type="submit"
-            disabled={pending || !newTitle.trim()}
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] transition hover:bg-[rgba(79,184,178,0.24)] disabled:opacity-50"
-          >
-            Add
-          </button>
-        </form>
-
-        {error ? (
-          <p className="mb-4 rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700">
-            {error}
-          </p>
-        ) : null}
-
-        {taskList.length === 0 ? (
-          <p className="text-sm text-[var(--sea-ink-soft)]">
-            No tasks yet. Add one above.
-          </p>
-        ) : (
-          <ul className="m-0 flex list-none flex-col gap-2 p-0">
-            {taskList.map((task) => (
-              <li
-                key={task.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--line)] bg-white/40 px-4 py-3"
+        <Card className="min-w-0 flex-1">
+          <CardHeader className="border-b border-border/60 pb-6">
+            <CardTitle className="text-lg lg:sr-only">Your tasks</CardTitle>
+            <CardDescription className="lg:sr-only">
+              Add and manage tasks for your account.
+            </CardDescription>
+            <form
+              onSubmit={handleAdd}
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <Input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="What do you need to do?"
+                disabled={pending}
+                className="h-10 flex-1 text-base sm:h-11"
+              />
+              <Button
+                type="submit"
+                disabled={pending || !newTitle.trim()}
+                className="shrink-0 sm:px-8"
               >
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  disabled={pending}
-                  onChange={() => handleToggle(task)}
-                  className="h-4 w-4 accent-[var(--lagoon-deep)]"
-                  aria-label={
-                    task.completed ? 'Mark incomplete' : 'Mark complete'
-                  }
-                />
+                Add task
+              </Button>
+            </form>
+          </CardHeader>
 
-                {editingId === task.id ? (
-                  <>
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      disabled={pending}
-                      className="min-w-0 flex-1 rounded-lg border border-[var(--line)] bg-white/80 px-3 py-1.5 text-[var(--sea-ink)] outline-none"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => handleSaveEdit(task.id)}
-                      className="text-sm font-semibold text-[var(--lagoon-deep)]"
+          <CardContent className="space-y-4 pt-6">
+            {error ? (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            {taskList.length === 0 ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                No tasks yet. Add one above.
+              </p>
+            ) : (
+              <>
+                <div
+                  className="hidden gap-4 px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase md:grid md:grid-cols-[2.5rem_1fr_6.5rem]"
+                  aria-hidden
+                >
+                  <span>Done</span>
+                  <span>Task</span>
+                  <span className="text-right">Actions</span>
+                </div>
+                <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                  {taskList.map((task) => (
+                    <li
+                      key={task.id}
+                      className={cn(
+                        'rounded-lg border border-border/80 transition-colors',
+                        editingId === task.id
+                          ? 'px-3 py-3 md:px-4 md:py-4'
+                          : [
+                              'flex items-center gap-3 px-3 py-3',
+                              'md:grid md:grid-cols-[2.5rem_1fr_6.5rem] md:items-center md:gap-4 md:px-4 md:py-3.5',
+                            ],
+                        'hover:border-primary/20 hover:bg-accent/30',
+                        task.completed && editingId !== task.id && 'bg-muted/30',
+                      )}
                     >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => {
-                        setEditingId(null)
-                        setEditTitle('')
-                      }}
-                      className="text-sm text-[var(--sea-ink-soft)]"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <span
-                      className={`min-w-0 flex-1 text-[var(--sea-ink)] ${task.completed ? 'line-through opacity-60' : ''}`}
-                    >
-                      {task.title}
-                    </span>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => startEdit(task)}
-                      className="text-sm font-semibold text-[var(--lagoon-deep)]"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => handleDelete(task.id)}
-                      className="text-sm text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+                      {editingId === task.id ? (
+                        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+                          <Input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            disabled={pending}
+                            className="flex-1"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                void handleSaveEdit(task.id)
+                              }
+                              if (e.key === 'Escape') {
+                                setEditingId(null)
+                                setEditTitle('')
+                              }
+                            }}
+                          />
+                          <div className="flex shrink-0 gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              disabled={pending}
+                              onClick={() => handleSaveEdit(task.id)}
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              disabled={pending}
+                              onClick={() => {
+                                setEditingId(null)
+                                setEditTitle('')
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                      <div className="flex shrink-0 items-center md:justify-center">
+                        <Checkbox
+                          checked={task.completed}
+                          disabled={pending}
+                          onCheckedChange={(checked) =>
+                            handleToggle(task, checked === true)
+                          }
+                          aria-label={
+                            task.completed
+                              ? 'Mark incomplete'
+                              : 'Mark complete'
+                          }
+                        />
+                      </div>
+
+                          <span
+                            className={cn(
+                              'min-w-0 flex-1 text-sm md:text-base',
+                              task.completed
+                                ? 'text-muted-foreground line-through'
+                                : 'text-foreground',
+                            )}
+                          >
+                            {task.title}
+                          </span>
+                          <div className="flex shrink-0 justify-end gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={pending}
+                              onClick={() => startEdit(task)}
+                              aria-label="Edit task"
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={pending}
+                              onClick={() => handleDelete(task.id)}
+                              aria-label="Delete task"
+                              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </PageShell>
   )
 }

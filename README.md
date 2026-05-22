@@ -52,7 +52,11 @@ bun --bun run check
 
 ## Deploy to Cloudflare Workers
 
-This project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) and `wrangler.jsonc`:
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/WijanDev/taskflux)
+
+Use the button above to deploy TaskFlux to **your own Cloudflare account** in a few clicks (forks the repo, provisions D1, runs Workers Builds). Source code: [github.com/WijanDev/taskflux](https://github.com/WijanDev/taskflux).
+
+Manual setup — this project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) and `wrangler.jsonc`:
 
 1. Install Wrangler: `npm install -g wrangler`
 2. Authenticate: `wrangler login`

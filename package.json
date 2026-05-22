@@ -6,6 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
+    "predev": "bun run db:migrate",
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
@@ -13,7 +14,11 @@
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
-    "deploy": "bun run build && wrangler deploy"
+    "deploy": "bun run build && bun run db:migrate:remote && wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply taskflux --local",
+    "db:migrate:remote": "wrangler d1 migrations apply taskflux --remote",
+    "cf:typegen": "wrangler types",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.26.0",
@@ -24,12 +29,15 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
+    "better-auth": "^1.6.11",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260521.1",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",
     "@tanstack/eslint-config": "latest",
@@ -39,6 +47,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.20.0",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",

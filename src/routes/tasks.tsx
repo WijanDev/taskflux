@@ -1,21 +1,48 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-import { Pencil, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+
+import { useEffect, useMemo, useState } from 'react'
 
 import type { tasks } from '#/db/schema'
+
 import { PageShell } from '@/components/PageShell'
+import { NewTaskDialog } from '@/components/tasks/NewTaskDialog'
+import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
+
+import { CalendarNav } from '@/components/tasks/CalendarNav'
+
+import { DayTasksView } from '@/components/tasks/DayTasksView'
+
+import { MonthCalendarView } from '@/components/tasks/MonthCalendarView'
+
+import type { TaskListActions } from '@/components/tasks/TaskListItem'
+
+import { TasksViewModeMenu } from '@/components/tasks/TasksViewModeMenu'
+
+import { UnscheduledTasksPanel } from '@/components/tasks/UnscheduledTasksPanel'
+
+import { WeekCalendarView } from '@/components/tasks/WeekCalendarView'
+
 import { Alert, AlertDescription } from '@/components/ui/alert'
+
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
+
+import { Card, CardContent } from '@/components/ui/card'
+import { Plus } from 'lucide-react'
+
+import { toDatetimeLocalValue } from '@/lib/dates'
 import { cn } from '@/lib/utils'
+
+import {
+  formatDayTitle,
+  formatMonthYear,
+  formatWeekRange,
+  partitionTasks,
+} from '@/lib/task-calendar'
+import {
+  tasksSearchSchema,
+  useTasksUrlState,
+} from '@/lib/tasks-search-params'
+
 import {
   createTask,
   deleteTask,
@@ -25,18 +52,25 @@ import {
 } from '#/server/tasks'
 
 export const Route = createFileRoute('/tasks')({
+  validateSearch: tasksSearchSchema,
   beforeLoad: async () => {
     const { getSession } = await import('#/server/session')
+
     const session = await getSession()
+
     if (!session?.user) {
       throw redirect({
         to: '/signin',
+
         search: { redirect: '/tasks' },
       })
     }
+
     return { session }
   },
+
   loader: () => listTasks(),
+
   component: TasksPage,
 })
 
@@ -44,14 +78,73 @@ type Task = typeof tasks.$inferSelect
 
 function TasksPage() {
   const router = useRouter()
-  const taskList = Route.useLoaderData()
-  const [newTitle, setNewTitle] = useState('')
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editTitle, setEditTitle] = useState('')
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const completedCount = taskList.filter((t) => t.completed).length
+  const taskList = Route.useLoaderData()
+
+  const {
+    viewMode,
+    setViewMode,
+    selectedTaskId,
+    viewDay,
+    viewWeekStart,
+    viewYear,
+    viewMonth,
+    goToPreviousPeriod,
+    goToNextPeriod,
+    openTaskId,
+    closeTaskId,
+  } = useTasksUrlState()
+
+  const [newTitle, setNewTitle] = useState('')
+
+  const [newStartAt, setNewStartAt] = useState('')
+
+  const [newEndAt, setNewEndAt] = useState('')
+
+  const [editingId, setEditingId] = useState<number | null>(null)
+
+  const [editTitle, setEditTitle] = useState('')
+
+  const [editStartAt, setEditStartAt] = useState('')
+
+  const [editEndAt, setEditEndAt] = useState('')
+
+  const [pending, setPending] = useState(false)
+
+  const [error, setError] = useState<string | null>(null)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+
+  const { scheduled, unscheduled } = useMemo(
+    () => partitionTasks(taskList),
+
+    [taskList],
+  )
+
+  const selectedTask = useMemo(
+    () =>
+      selectedTaskId == null
+        ? null
+        : (taskList.find((t) => t.id === selectedTaskId) ?? null),
+    [selectedTaskId, taskList],
+  )
+
+  const detailDialogOpen = selectedTask != null
+
+  useEffect(() => {
+    if (selectedTaskId != null && selectedTask == null) {
+      closeTaskId()
+    }
+  }, [selectedTaskId, selectedTask, closeTaskId])
+
+  function openTaskDetail(task: Task) {
+    clearEditForm()
+    openTaskId(task.id)
+  }
+
+  function closeTaskDetail() {
+    clearEditForm()
+    closeTaskId()
+  }
 
   async function refresh() {
     await router.invalidate()
@@ -59,9 +152,12 @@ function TasksPage() {
 
   async function runAction(action: () => Promise<unknown>) {
     setPending(true)
+
     setError(null)
+
     try {
       await action()
+
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -70,13 +166,44 @@ function TasksPage() {
     }
   }
 
+  function clearNewForm() {
+    setNewTitle('')
+
+    setNewStartAt('')
+
+    setNewEndAt('')
+  }
+
+  function clearEditForm() {
+    setEditingId(null)
+
+    setEditTitle('')
+
+    setEditStartAt('')
+
+    setEditEndAt('')
+  }
+
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault()
+
     const title = newTitle.trim()
+
     if (!title) return
+
     await runAction(async () => {
-      await createTask({ data: { title } })
-      setNewTitle('')
+      await createTask({
+        data: {
+          title,
+
+          taskStartAt: newStartAt || null,
+
+          taskEndsAt: newEndAt || null,
+        },
+      })
+
+      clearNewForm()
+      setAddDialogOpen(false)
     })
   }
 
@@ -88,204 +215,200 @@ function TasksPage() {
 
   async function handleSaveEdit(id: number) {
     const title = editTitle.trim()
+
     if (!title) return
+
     await runAction(async () => {
-      await updateTask({ data: { id, title } })
-      setEditingId(null)
-      setEditTitle('')
+      await updateTask({
+        data: {
+          id,
+
+          title,
+
+          taskStartAt: editStartAt || null,
+
+          taskEndsAt: editEndAt || null,
+        },
+      })
+
+      clearEditForm()
     })
   }
 
   async function handleDelete(id: number) {
-    await runAction(() => deleteTask({ data: { id } }))
+    await runAction(async () => {
+      await deleteTask({ data: { id } })
+      if (selectedTaskId === id) {
+        closeTaskDetail()
+      }
+    })
   }
 
   function startEdit(task: Task) {
     setEditingId(task.id)
+
     setEditTitle(task.title)
+
+    setEditStartAt(toDatetimeLocalValue(task.taskStartAt))
+
+    setEditEndAt(toDatetimeLocalValue(task.taskEndsAt))
   }
 
+  const listActions: TaskListActions = {
+    pending,
+
+    editingId,
+
+    editTitle,
+
+    editStartAt,
+
+    editEndAt,
+
+    onToggle: handleToggle,
+
+    onStartEdit: startEdit,
+
+    onSaveEdit: handleSaveEdit,
+
+    onCancelEdit: clearEditForm,
+
+    onDelete: handleDelete,
+
+    onEditTitleChange: setEditTitle,
+
+    onEditStartChange: setEditStartAt,
+
+    onEditEndChange: setEditEndAt,
+  }
+
+  const periodTitle =
+    viewMode === 'monthly'
+      ? formatMonthYear(viewYear, viewMonth)
+      : viewMode === 'weekly'
+        ? formatWeekRange(viewWeekStart)
+        : formatDayTitle(viewDay)
+
+  const previousLabel =
+    viewMode === 'monthly'
+      ? 'Previous month'
+      : viewMode === 'weekly'
+        ? 'Previous week'
+        : 'Previous day'
+
+  const nextLabel =
+    viewMode === 'monthly'
+      ? 'Next month'
+      : viewMode === 'weekly'
+        ? 'Next week'
+        : 'Next day'
+
   return (
-    <PageShell full className="py-8 md:py-10">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-        <aside className="shrink-0 lg:w-52">
-          <div className="lg:sticky lg:top-24">
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              Tasks
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {taskList.length === 0
-                ? 'Nothing here yet.'
-                : `${completedCount} of ${taskList.length} done`}
-            </p>
-          </div>
-        </aside>
+    <PageShell full fluid className="px-0 py-2 md:py-3">
+      <TaskDetailDialog
+        task={selectedTask}
+        open={detailDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeTaskDetail()
+        }}
+        pending={pending}
+        error={detailDialogOpen && !addDialogOpen ? error : null}
+        isEditing={selectedTask != null && editingId === selectedTask.id}
+        editTitle={editTitle}
+        editStartAt={editStartAt}
+        editEndAt={editEndAt}
+        onStartEdit={() => selectedTask && startEdit(selectedTask)}
+        onSaveEdit={() => selectedTask && handleSaveEdit(selectedTask.id)}
+        onCancelEdit={clearEditForm}
+        onDelete={() => selectedTask && handleDelete(selectedTask.id)}
+        onEditTitleChange={setEditTitle}
+        onEditStartChange={setEditStartAt}
+        onEditEndChange={setEditEndAt}
+      />
 
-        <Card className="min-w-0 flex-1">
-          <CardHeader className="border-b border-border/60 pb-6">
-            <CardTitle className="text-lg lg:sr-only">Your tasks</CardTitle>
-            <CardDescription className="lg:sr-only">
-              Add and manage tasks for your account.
-            </CardDescription>
-            <form
-              onSubmit={handleAdd}
-              className="flex flex-col gap-3 sm:flex-row sm:items-center"
-            >
-              <Input
-                type="text"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="What do you need to do?"
-                disabled={pending}
-                className="h-10 flex-1 text-base sm:h-11"
-              />
-              <Button
-                type="submit"
-                disabled={pending || !newTitle.trim()}
-                className="shrink-0 sm:px-8"
-              >
-                Add task
-              </Button>
-            </form>
-          </CardHeader>
+      <NewTaskDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        title={newTitle}
+        startAt={newStartAt}
+        endAt={newEndAt}
+        pending={pending}
+        error={addDialogOpen ? error : null}
+        onTitleChange={setNewTitle}
+        onStartChange={setNewStartAt}
+        onEndChange={setNewEndAt}
+        onSubmit={handleAdd}
+      />
 
-          <CardContent className="space-y-4 pt-6">
-            {error ? (
-              <Alert variant="destructive">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden lg:flex-row lg:items-stretch">
+        <UnscheduledTasksPanel
+          tasks={unscheduled}
+          actions={listActions}
+          className="min-h-0 max-h-48 shrink-0 overflow-hidden lg:max-h-none lg:self-stretch"
+        />
+
+        <Card className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 overflow-hidden py-0">
+          <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden py-4">
+            {error && !addDialogOpen && !detailDialogOpen ? (
+              <Alert variant="destructive" className="shrink-0">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
 
-            {taskList.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                No tasks yet. Add one above.
-              </p>
-            ) : (
-              <>
-                <div
-                  className="hidden gap-4 px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase md:grid md:grid-cols-[2.5rem_1fr_6.5rem]"
-                  aria-hidden
-                >
-                  <span>Done</span>
-                  <span>Task</span>
-                  <span className="text-right">Actions</span>
-                </div>
-                <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                  {taskList.map((task) => (
-                    <li
-                      key={task.id}
-                      className={cn(
-                        'rounded-lg border border-border/80 transition-colors',
-                        editingId === task.id
-                          ? 'px-3 py-3 md:px-4 md:py-4'
-                          : [
-                              'flex items-center gap-3 px-3 py-3',
-                              'md:grid md:grid-cols-[2.5rem_1fr_6.5rem] md:items-center md:gap-4 md:px-4 md:py-3.5',
-                            ],
-                        'hover:border-primary/20 hover:bg-accent/30',
-                        task.completed && editingId !== task.id && 'bg-muted/30',
-                      )}
-                    >
-                      {editingId === task.id ? (
-                        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-                          <Input
-                            type="text"
-                            value={editTitle}
-                            onChange={(e) => setEditTitle(e.target.value)}
-                            disabled={pending}
-                            className="flex-1"
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault()
-                                void handleSaveEdit(task.id)
-                              }
-                              if (e.key === 'Escape') {
-                                setEditingId(null)
-                                setEditTitle('')
-                              }
-                            }}
-                          />
-                          <div className="flex shrink-0 gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              disabled={pending}
-                              onClick={() => handleSaveEdit(task.id)}
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              disabled={pending}
-                              onClick={() => {
-                                setEditingId(null)
-                                setEditTitle('')
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                      <div className="flex shrink-0 items-center md:justify-center">
-                        <Checkbox
-                          checked={task.completed}
-                          disabled={pending}
-                          onCheckedChange={(checked) =>
-                            handleToggle(task, checked === true)
-                          }
-                          aria-label={
-                            task.completed
-                              ? 'Mark incomplete'
-                              : 'Mark complete'
-                          }
-                        />
-                      </div>
+            <div className="relative z-30 flex shrink-0 items-center gap-3 overflow-visible">
+              <TasksViewModeMenu value={viewMode} onChange={setViewMode} />
 
-                          <span
-                            className={cn(
-                              'min-w-0 flex-1 text-sm md:text-base',
-                              task.completed
-                                ? 'text-muted-foreground line-through'
-                                : 'text-foreground',
-                            )}
-                          >
-                            {task.title}
-                          </span>
-                          <div className="flex shrink-0 justify-end gap-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              disabled={pending}
-                              onClick={() => startEdit(task)}
-                              aria-label="Edit task"
-                            >
-                              <Pencil className="size-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              disabled={pending}
-                              onClick={() => handleDelete(task.id)}
-                              aria-label="Delete task"
-                              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                            >
-                              <Trash2 className="size-4" />
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+              <div className="flex min-w-0 flex-1 justify-center">
+                <CalendarNav
+                  title={periodTitle}
+                  onPrevious={goToPreviousPeriod}
+                  onNext={goToNextPeriod}
+                  previousLabel={previousLabel}
+                  nextLabel={nextLabel}
+                />
+              </div>
+
+              <Button
+                type="button"
+                size="icon"
+                aria-label="Add task"
+                onClick={() => setAddDialogOpen(true)}
+              >
+                <Plus className="size-5" />
+              </Button>
+            </div>
+
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              {viewMode === 'monthly' ? (
+                <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                <MonthCalendarView
+                  year={viewYear}
+                  month={viewMonth}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+                </div>
+              ) : null}
+
+              {viewMode === 'weekly' ? (
+                <WeekCalendarView
+                  weekStart={viewWeekStart}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+              ) : null}
+
+              {viewMode === 'daily' ? (
+                <DayTasksView
+                  day={viewDay}
+                  scheduledTasks={scheduled}
+                  actions={listActions}
+                  onTaskSelect={openTaskDetail}
+                />
+              ) : null}
+            </div>
           </CardContent>
         </Card>
       </div>

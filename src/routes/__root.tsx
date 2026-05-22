@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 
@@ -39,9 +40,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="flex min-h-screen flex-col [overflow-wrap:anywhere]">
+      <body className="flex h-dvh flex-col overflow-hidden [overflow-wrap:anywhere]">
         <Header />
-        <div className="flex-1">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </div>
         <Footer />
         <TanStackDevtools
           config={{

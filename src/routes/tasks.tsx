@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import type { tasks } from '#/db/schema'
@@ -9,8 +9,19 @@ import {
   setTaskCompleted,
   updateTask,
 } from '#/server/tasks'
+import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/tasks')({
+  beforeLoad: async () => {
+    const session = await getSession()
+    if (!session?.user) {
+      throw redirect({
+        to: '/signin',
+        search: { redirect: '/tasks' },
+      })
+    }
+    return { session }
+  },
   loader: () => listTasks(),
   component: TasksPage,
 })

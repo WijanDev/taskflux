@@ -1,5 +1,5 @@
-import { CalendarDays, ChevronDown, LayoutGrid } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronDown, LayoutGrid, RectangleHorizontal, Square } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -7,13 +7,29 @@ import type { TasksViewMode } from '@/lib/task-calendar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
+type ViewModeIconProps = {
+  className?: string
+}
+
+function DailyViewIcon({ className }: ViewModeIconProps) {
+  return <Square className={className} strokeWidth={2} aria-hidden />
+}
+
+function WeeklyViewIcon({ className }: ViewModeIconProps) {
+  return <RectangleHorizontal className={className} strokeWidth={2} aria-hidden />
+}
+
+function MonthlyViewIcon({ className }: ViewModeIconProps) {
+  return <LayoutGrid className={className} strokeWidth={2} aria-hidden />
+}
+
 const VIEW_OPTION_META: {
   value: TasksViewMode
-  icon: typeof LayoutGrid
+  Icon: (props: ViewModeIconProps) => ReactElement
 }[] = [
-  { value: 'daily', icon: CalendarDays },
-  { value: 'weekly', icon: CalendarDays },
-  { value: 'monthly', icon: LayoutGrid },
+  { value: 'daily', Icon: DailyViewIcon },
+  { value: 'weekly', Icon: WeeklyViewIcon },
+  { value: 'monthly', Icon: MonthlyViewIcon },
 ]
 
 type MenuPosition = {
@@ -25,7 +41,7 @@ type MenuPosition = {
 type TasksViewModeMenuProps = {
   value: TasksViewMode
   onChange: (mode: TasksViewMode) => void
-  /** Icon-only trigger on small screens */
+  /** Compact trigger with visible label (mobile toolbar). */
   compact?: boolean
 }
 
@@ -50,6 +66,7 @@ export function TasksViewModeMenu({
   )
 
   const active = viewOptions.find((o) => o.value === value) ?? viewOptions[0]!
+  const ActiveIcon = active.Icon
 
   const updatePosition = useCallback(() => {
     const trigger = triggerRef.current
@@ -125,25 +142,28 @@ export function TasksViewModeMenu({
           minWidth: position.minWidth,
         }}
       >
-        {viewOptions.map((option) => (
-          <li key={option.value} role="option" aria-selected={value === option.value}>
-            <button
-              type="button"
-              role="menuitem"
-              className={cn(
-                'flex h-9 w-full items-center gap-2 rounded-sm px-2.5 text-left text-sm hover:bg-accent',
-                value === option.value && 'bg-accent font-medium',
-              )}
-              onClick={() => {
-                onChange(option.value)
-                setOpen(false)
-              }}
-            >
-              <option.icon className="size-4 shrink-0" aria-hidden />
-              {option.label}
-            </button>
-          </li>
-        ))}
+        {viewOptions.map((option) => {
+          const OptionIcon = option.Icon
+          return (
+            <li key={option.value} role="option" aria-selected={value === option.value}>
+              <button
+                type="button"
+                role="menuitem"
+                className={cn(
+                  'flex h-9 w-full items-center gap-2 rounded-sm px-2.5 text-left text-sm hover:bg-accent',
+                  value === option.value && 'bg-accent font-medium',
+                )}
+                onClick={() => {
+                  onChange(option.value)
+                  setOpen(false)
+                }}
+              >
+                <OptionIcon className="size-4 shrink-0" />
+                {option.label}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     ) : null
 
@@ -154,19 +174,14 @@ export function TasksViewModeMenu({
         variant="outline"
         className={cn(
           'h-9 gap-1.5',
-          compact ? 'px-2.5' : 'px-3',
+          compact ? 'max-w-[9.5rem] px-2.5 sm:max-w-none' : 'px-3',
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={compact ? `View: ${active.label}` : undefined}
         onClick={toggleOpen}
       >
-        <active.icon className="size-4 shrink-0" aria-hidden />
-        {compact ? (
-          <span className="sr-only">{active.label}</span>
-        ) : (
-          active.label
-        )}
+        <ActiveIcon className="size-4 shrink-0" />
+        <span className={cn('truncate', compact && 'text-sm')}>{active.label}</span>
         <ChevronDown
           className={cn('size-4 shrink-0 transition-transform', open && 'rotate-180')}
           aria-hidden

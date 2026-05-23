@@ -22,31 +22,45 @@ const featureIcons = {
 } as const
 
 function App() {
-  const { t } = useTranslation('home')
+  const { t } = useTranslation(['home', 'common'])
 
   return (
     <PageShell wide className="py-16 md:py-24">
       <div className="flex flex-col gap-20 md:gap-28">
         <section className="max-w-2xl space-y-8 md:space-y-10">
+          <Link
+            to="/"
+            className="flex w-fit items-center gap-3 text-foreground no-underline"
+          >
+            <img
+              src="/favicon.svg"
+              alt=""
+              className="size-10 shrink-0 sm:size-12"
+              aria-hidden
+            />
+            <span className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              {t('common:appName')}
+            </span>
+          </Link>
           <p className="text-xs font-medium tracking-[0.2em] text-primary uppercase">
-            {t('eyebrow')}
+            {t('home:eyebrow')}
           </p>
           <h1 className="text-4xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
-            {t('title')}{' '}
-            <span className="text-primary">{t('titleAccent')}</span>
+            {t('home:title')}{' '}
+            <span className="text-primary">{t('home:titleAccent')}</span>
           </h1>
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
-            {t('description')}
+            {t('home:description')}
           </p>
           <div className="flex flex-wrap gap-4 pt-2">
             <Button asChild size="lg">
               <Link to="/tasks">
-                {t('openTasks')}
+                {t('home:openTasks')}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <Link to="/about">{t('about')}</Link>
+              <Link to="/about">{t('home:about')}</Link>
             </Button>
           </div>
         </section>
@@ -54,9 +68,11 @@ function App() {
         <section className="space-y-8">
           <div className="max-w-xl space-y-2">
             <h2 className="text-sm font-medium tracking-wide text-foreground uppercase">
-              {t('builtForClarity')}
+              {t('home:builtForClarity')}
             </h2>
-            <p className="text-muted-foreground">{t('builtForClarityDescription')}</p>
+            <p className="text-muted-foreground">
+              {t('home:builtForClarityDescription')}
+            </p>
           </div>
           <ul className="m-0 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {featureKeys.map((key) => {
@@ -69,10 +85,10 @@ function App() {
                         <Icon className="size-4" />
                       </div>
                       <CardTitle className="text-base">
-                        {t(`features.${key}.title`)}
+                        {t(`home:features.${key}.title`)}
                       </CardTitle>
                       <CardDescription className="leading-relaxed">
-                        {t(`features.${key}.description`)}
+                        {t(`home:features.${key}.description`)}
                       </CardDescription>
                     </CardHeader>
                   </Card>
@@ -85,12 +101,12 @@ function App() {
         <section>
           <Card className="border-dashed border-primary/30 bg-accent/20 shadow-none">
             <CardContent className="px-8 py-10 text-sm leading-relaxed text-muted-foreground md:text-base">
-              {t('cta')}{' '}
+              {t('home:cta')}{' '}
               <Link
                 to="/signup"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                {t('createAccount')}
+                {t('home:createAccount')}
               </Link>
               .
             </CardContent>

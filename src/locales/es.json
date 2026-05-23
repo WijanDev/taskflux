@@ -191,7 +191,10 @@
     }
   },
   "calendar": {
-    "today": "Hoy"
+    "today": "Hoy",
+    "noTasksScheduled": "Sin tareas programadas",
+    "emptyMonth": "No hay tareas programadas este mes.",
+    "moreTasks": "+{{count}} más"
   },
   "errors": {
     "generic": "Algo salió mal",

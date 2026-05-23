@@ -16,7 +16,9 @@ Main route: `src/routes/tasks.tsx`.
 - **Context menu:** shadcn `ContextMenu` in `TaskBlockContextMenu.tsx` (not custom portal menus).
 - **Dialogs:** `NewTaskDialog`, `TaskDetailDialog` + `TaskDialogChrome`.
 - **Schedule inputs:** `TaskScheduleFields` + `datetime-picker` / `calendar` (popover z-index).
-- **Month list item:** `TaskCalendarItem` — title only in grid cells (compact).
+- **Month mobile:** scrollable day cards (`md:hidden`), auto-scroll to today; tap day → daily view.
+- **Month desktop:** 7×5 grid with up to 3 tasks per cell and “+N more”.
+- **Month item:** `TaskCalendarItem` — schedule time on first line, title on second (locale-aware).
 
 ## Unscheduled panel
 
@@ -39,10 +41,10 @@ Main route: `src/routes/tasks.tsx`.
 
 **Theme:** still applied via `localStorage` + `applyThemeMode`; logged-in users set theme in Settings (no header toggle).
 
-## View mode menu
+## View mode menu & transitions
 
-- `TasksViewModeMenu.tsx` — Daily: square icon; Weekly: horizontal rectangle; Monthly: grid.
-- Mobile trigger shows **icon + label** for current view.
+- `TasksViewModeMenu.tsx` — Daily: `Square`; Weekly: `RectangleHorizontal`; Monthly: `LayoutGrid`; mobile shows **icon + label**.
+- `use-calendar-period-navigation.ts` + `CalendarPeriodTransition` — slide transitions on period/view changes.
 
 ## Date / time helpers
 

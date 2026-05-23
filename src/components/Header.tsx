@@ -69,7 +69,12 @@ export default function Header() {
             to="/"
             className="flex shrink-0 items-center gap-2 pr-2 text-sm font-semibold tracking-tight text-foreground no-underline sm:pr-4"
           >
-            <span className="size-2 rounded-full bg-primary shadow-[0_0_12px_var(--color-primary)]" />
+            <img
+              src="/favicon.svg"
+              alt=""
+              className="size-6 shrink-0 sm:size-7"
+              aria-hidden
+            />
             {t('common:appName')}
           </Link>
 

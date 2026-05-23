@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import type { tasks } from '#/db/schema'
 import { PageShell } from '@/components/PageShell'
+import { CalendarPeriodTransition } from '@/components/tasks/CalendarPeriodTransition'
 import { NewTaskDialog } from '@/components/tasks/NewTaskDialog'
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
 import { DayTasksView } from '@/components/tasks/DayTasksView'
@@ -22,6 +23,7 @@ import {
 } from '@/lib/page-transition'
 import { cn } from '@/lib/utils'
 import { partitionTasks } from '@/lib/task-calendar'
+import { useCalendarPeriodNavigation } from '@/hooks/use-calendar-period-navigation'
 import { useFormatters } from '@/providers/AppPreferencesProvider'
 import {
   tasksSearchSchema,
@@ -101,9 +103,29 @@ function TasksPage() {
     viewMonth,
     goToPreviousPeriod,
     goToNextPeriod,
+    setCalendarAnchor,
     openTaskId,
     closeTaskId,
   } = useTasksUrlState()
+
+  const {
+    periodKey,
+    enterDirection,
+    onPrevious,
+    onNext,
+    onViewModeChange,
+    openDayView,
+  } = useCalendarPeriodNavigation({
+    viewMode,
+    viewYear,
+    viewMonth,
+    viewWeekStart,
+    viewDay,
+    goToPreviousPeriod,
+    goToNextPeriod,
+    setViewMode,
+    setCalendarAnchor,
+  })
 
   const [newTitle, setNewTitle] = useState('')
   const [newStartAt, setNewStartAt] = useState('')
@@ -330,16 +352,21 @@ function TasksPage() {
 
             <TasksCalendarToolbar
               viewMode={viewMode}
-              onViewModeChange={setViewMode}
+              onViewModeChange={onViewModeChange}
               periodTitle={periodTitle}
-              onPrevious={goToPreviousPeriod}
-              onNext={goToNextPeriod}
+              periodKey={periodKey}
+              enterDirection={enterDirection}
+              onPrevious={onPrevious}
+              onNext={onNext}
               previousLabel={previousLabel}
               nextLabel={nextLabel}
               onAddTask={() => setAddDialogOpen(true)}
             />
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <CalendarPeriodTransition
+              periodKey={periodKey}
+              enterDirection={enterDirection}
+            >
               {viewMode === 'monthly' ? (
                 <MonthCalendarView
                   year={viewYear}
@@ -347,6 +374,7 @@ function TasksPage() {
                   scheduledTasks={scheduled}
                   actions={listActions}
                   onTaskSelect={openTaskDetail}
+                  onDaySelect={openDayView}
                 />
               ) : null}
 
@@ -367,7 +395,7 @@ function TasksPage() {
                   onTaskSelect={openTaskDetail}
                 />
               ) : null}
-            </div>
+            </CalendarPeriodTransition>
           </CardContent>
         </Card>
       </div>

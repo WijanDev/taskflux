@@ -97,14 +97,40 @@ export function createFormatters(
     }).format(day)
   }
 
+  function formatMonthDayHeading(day: Date): string {
+    return new Intl.DateTimeFormat(locale, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    }).format(day)
+  }
+
+  function formatTaskTimeRange(
+    start: Date | null | undefined,
+    end: Date | null | undefined,
+  ): string | null {
+    if (!start && !end) {
+      return null
+    }
+    if (start && end) {
+      return `${timeOnlyFormatter.format(start)} – ${timeOnlyFormatter.format(end)}`
+    }
+    if (start) {
+      return timeOnlyFormatter.format(start)
+    }
+    return timeOnlyFormatter.format(end!)
+  }
+
   return {
     formatTaskTimestamp,
     formatTaskRange,
+    formatTaskTimeRange,
     formatMonthYear,
     formatDayTitle,
     formatWeekRange,
     formatTimelineLabel,
     formatWeekday,
+    formatMonthDayHeading,
   }
 }
 

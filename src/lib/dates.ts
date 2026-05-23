@@ -21,13 +21,27 @@ export function assertValidTaskRange(
   }
 }
 
-/** Value for `<input type="datetime-local" />`. */
+/** `YYYY-MM-DDTHH:mm` for forms and API payloads. */
 export function toDatetimeLocalValue(date: Date | null | undefined): string {
   if (!date) {
     return ''
   }
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+/** Parse `YYYY-MM-DDTHH:mm` (or ISO) from date pickers; empty → undefined. */
+export function parseDatetimeLocalValue(
+  value: string | null | undefined,
+): Date | undefined {
+  if (value == null || value.trim() === '') {
+    return undefined
+  }
+  const ms = Date.parse(value)
+  if (Number.isNaN(ms)) {
+    return undefined
+  }
+  return new Date(ms)
 }
 
 const displayFormatter = new Intl.DateTimeFormat(undefined, {

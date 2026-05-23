@@ -28,7 +28,7 @@ export function TaskTimeBlock({
       >
         <span
           className={cn(
-            'line-clamp-3 text-xs leading-tight font-medium',
+            'line-clamp-2 text-[11px] leading-tight font-medium sm:line-clamp-3 sm:text-xs',
             task.completed
               ? 'text-muted-foreground line-through'
               : 'text-foreground',

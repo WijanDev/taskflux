@@ -24,7 +24,8 @@ export function Container({
   return (
     <div
       className={cn(
-        'mx-auto w-full px-4 sm:px-6 lg:px-8',
+        'mx-auto w-full',
+        fluid ? 'px-3 sm:px-4 md:px-6 lg:px-8' : 'px-3 sm:px-6 lg:px-8',
         narrow && 'max-w-md',
         !narrow && !fluid && wide && 'max-w-6xl',
         !narrow && !fluid && !wide && full && 'max-w-5xl',

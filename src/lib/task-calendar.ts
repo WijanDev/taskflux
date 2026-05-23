@@ -14,6 +14,16 @@ export const WEEKDAY_LABELS = [
   'Sun',
 ] as const
 
+export const WEEKDAY_LABELS_SHORT = [
+  'M',
+  'T',
+  'W',
+  'T',
+  'F',
+  'S',
+  'S',
+] as const
+
 export const MONTH_GRID_WEEKS = 5
 export const MONTH_GRID_DAYS = MONTH_GRID_WEEKS * 7
 

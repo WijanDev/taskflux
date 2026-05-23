@@ -1,8 +1,10 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { tasks } from '#/db/schema'
 import { PageShell } from '@/components/PageShell'
+import { CalendarPeriodTransition } from '@/components/tasks/CalendarPeriodTransition'
 import { NewTaskDialog } from '@/components/tasks/NewTaskDialog'
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
 import { DayTasksView } from '@/components/tasks/DayTasksView'
@@ -15,11 +17,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { toDatetimeLocalValue } from '@/lib/dates'
 import {
-  formatDayTitle,
-  formatMonthYear,
-  formatWeekRange,
-  partitionTasks,
-} from '@/lib/task-calendar'
+  PAGE_ENTER_CLASS,
+  PAGE_TRANSITION_MS,
+  type SettingsSaveNavigationState,
+} from '@/lib/page-transition'
+import { cn } from '@/lib/utils'
+import { partitionTasks } from '@/lib/task-calendar'
+import { useCalendarPeriodNavigation } from '@/hooks/use-calendar-period-navigation'
+import { useFormatters } from '@/providers/AppPreferencesProvider'
 import {
   tasksSearchSchema,
   useTasksUrlState,
@@ -57,8 +62,36 @@ export const Route = createFileRoute('/tasks')({
 type Task = typeof tasks.$inferSelect
 
 function TasksPage() {
+  const { t } = useTranslation(['tasks', 'errors'])
+  const { formatMonthYear, formatWeekRange, formatDayTitle } = useFormatters()
   const router = useRouter()
   const taskList = Route.useLoaderData()
+  const [enterFromSettings, setEnterFromSettings] = useState(false)
+
+  useEffect(() => {
+    const state = router.state.location.state as
+      | SettingsSaveNavigationState
+      | undefined
+    if (!state?.fromSettingsSave) {
+      return
+    }
+
+    setEnterFromSettings(true)
+
+    void router.navigate({
+      to: '/tasks',
+      search: router.state.location.search,
+      replace: true,
+      state: {},
+    })
+
+    const timer = window.setTimeout(() => {
+      setEnterFromSettings(false)
+    }, PAGE_TRANSITION_MS)
+
+    return () => window.clearTimeout(timer)
+    // Only check navigation state on mount (avoids hydration mismatch).
+  }, [])
 
   const {
     viewMode,
@@ -70,9 +103,29 @@ function TasksPage() {
     viewMonth,
     goToPreviousPeriod,
     goToNextPeriod,
+    setCalendarAnchor,
     openTaskId,
     closeTaskId,
   } = useTasksUrlState()
+
+  const {
+    periodKey,
+    enterDirection,
+    onPrevious,
+    onNext,
+    onViewModeChange,
+    openDayView,
+  } = useCalendarPeriodNavigation({
+    viewMode,
+    viewYear,
+    viewMonth,
+    viewWeekStart,
+    viewDay,
+    goToPreviousPeriod,
+    goToNextPeriod,
+    setViewMode,
+    setCalendarAnchor,
+  })
 
   const [newTitle, setNewTitle] = useState('')
   const [newStartAt, setNewStartAt] = useState('')
@@ -127,7 +180,7 @@ function TasksPage() {
       await action()
       await refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : t('errors:generic'))
     } finally {
       setPending(false)
     }
@@ -226,20 +279,27 @@ function TasksPage() {
 
   const previousLabel =
     viewMode === 'monthly'
-      ? 'Previous month'
+      ? t('tasks:nav.previousMonth')
       : viewMode === 'weekly'
-        ? 'Previous week'
-        : 'Previous day'
+        ? t('tasks:nav.previousWeek')
+        : t('tasks:nav.previousDay')
 
   const nextLabel =
     viewMode === 'monthly'
-      ? 'Next month'
+      ? t('tasks:nav.nextMonth')
       : viewMode === 'weekly'
-        ? 'Next week'
-        : 'Next day'
+        ? t('tasks:nav.nextWeek')
+        : t('tasks:nav.nextDay')
 
   return (
-    <PageShell full fluid className="px-2 py-2 sm:px-0 md:py-3">
+    <PageShell
+      full
+      fluid
+      className={cn(
+        'px-2 py-2 sm:px-0 md:py-3',
+        enterFromSettings && PAGE_ENTER_CLASS,
+      )}
+    >
       <TaskDetailDialog
         task={selectedTask}
         open={detailDialogOpen}
@@ -292,16 +352,21 @@ function TasksPage() {
 
             <TasksCalendarToolbar
               viewMode={viewMode}
-              onViewModeChange={setViewMode}
+              onViewModeChange={onViewModeChange}
               periodTitle={periodTitle}
-              onPrevious={goToPreviousPeriod}
-              onNext={goToNextPeriod}
+              periodKey={periodKey}
+              enterDirection={enterDirection}
+              onPrevious={onPrevious}
+              onNext={onNext}
               previousLabel={previousLabel}
               nextLabel={nextLabel}
               onAddTask={() => setAddDialogOpen(true)}
             />
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <CalendarPeriodTransition
+              periodKey={periodKey}
+              enterDirection={enterDirection}
+            >
               {viewMode === 'monthly' ? (
                 <MonthCalendarView
                   year={viewYear}
@@ -309,6 +374,7 @@ function TasksPage() {
                   scheduledTasks={scheduled}
                   actions={listActions}
                   onTaskSelect={openTaskDetail}
+                  onDaySelect={openDayView}
                 />
               ) : null}
 
@@ -329,7 +395,7 @@ function TasksPage() {
                   onTaskSelect={openTaskDetail}
                 />
               ) : null}
-            </div>
+            </CalendarPeriodTransition>
           </CardContent>
         </Card>
       </div>

@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { TaskScheduleFields } from '@/components/TaskScheduleFields'
 import { TaskDialogHeader } from '@/components/tasks/TaskDialogChrome'
@@ -40,14 +41,16 @@ export function NewTaskDialog({
   onEndChange,
   onSubmit,
 }: NewTaskDialogProps) {
+  const { t } = useTranslation(['tasks', 'common'])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent onClose={() => onOpenChange(false)}>
         <form onSubmit={onSubmit}>
           <TaskDialogHeader
             icon={Plus}
-            title="New task"
-            description="Give it a title and optional start and end times."
+            title={t('tasks:new.title')}
+            description={t('tasks:new.description')}
           />
 
           <DialogBody className="space-y-5">
@@ -58,13 +61,13 @@ export function NewTaskDialog({
             ) : null}
 
             <div className="grid gap-2.5">
-              <Label htmlFor="new-task-title">Title</Label>
+              <Label htmlFor="new-task-title">{t('common:labels.title')}</Label>
               <Input
                 id="new-task-title"
                 type="text"
                 value={title}
                 onChange={(e) => onTitleChange(e.target.value)}
-                placeholder="What do you need to do?"
+                placeholder={t('tasks:new.titlePlaceholder')}
                 disabled={pending}
                 className="h-10 bg-background/80"
                 autoFocus
@@ -88,11 +91,11 @@ export function NewTaskDialog({
               disabled={pending}
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('common:actions.cancel')}
             </Button>
             <Button type="submit" disabled={pending || !title.trim()}>
               <Plus className="size-4" />
-              Add task
+              {t('tasks:new.submit')}
             </Button>
           </DialogFooter>
         </form>

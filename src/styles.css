@@ -127,4 +127,85 @@
   button:disabled {
     cursor: not-allowed;
   }
+
+  @keyframes page-exit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-0.75rem);
+    }
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-exit {
+    animation: page-exit var(--page-transition-duration, 320ms) ease-in both;
+    pointer-events: none;
+  }
+
+  .page-enter {
+    animation: page-enter var(--page-transition-duration, 320ms) ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-exit,
+    .page-enter {
+      animation: none;
+    }
+  }
+
+  @keyframes calendar-period-in-next {
+    from {
+      opacity: 0;
+      transform: translateX(1rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes calendar-period-in-previous {
+    from {
+      opacity: 0;
+      transform: translateX(-1rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .calendar-period-enter-next {
+    animation: calendar-period-in-next var(--calendar-period-duration, 320ms)
+      ease-out both;
+  }
+
+  .calendar-period-enter-previous {
+    animation: calendar-period-in-previous var(--calendar-period-duration, 320ms)
+      ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .calendar-period-enter-next,
+    .calendar-period-enter-previous {
+      animation: none;
+    }
+  }
 }

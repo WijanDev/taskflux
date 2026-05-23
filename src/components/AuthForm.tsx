@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { PageShell } from '@/components/PageShell'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -35,6 +36,7 @@ export default function AuthForm({
   alternate,
   onSubmit,
 }: AuthFormProps) {
+  const { t } = useTranslation(['auth', 'common', 'errors'])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -48,7 +50,7 @@ export default function AuthForm({
     try {
       await onSubmit({ name, email, password })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : t('errors:generic'))
     } finally {
       setPending(false)
     }
@@ -65,7 +67,7 @@ export default function AuthForm({
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {mode === 'signup' ? (
               <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t('common:labels.name')}</Label>
                 <Input
                   id="name"
                   type="text"
@@ -79,7 +81,7 @@ export default function AuthForm({
             ) : null}
 
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('common:labels.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -92,7 +94,7 @@ export default function AuthForm({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('common:labels.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -114,7 +116,7 @@ export default function AuthForm({
             ) : null}
 
             <Button type="submit" disabled={pending} className="w-full">
-              {pending ? 'Please wait…' : submitLabel}
+              {pending ? t('common:actions.pleaseWait') : submitLabel}
             </Button>
           </form>
 
@@ -124,7 +126,9 @@ export default function AuthForm({
               to={alternate.to}
               className="font-medium text-primary underline-offset-4 hover:underline"
             >
-              {alternate.to === '/signin' ? 'Sign in' : 'Sign up'}
+              {alternate.to === '/signin'
+                ? t('signIn.submit')
+                : t('signUp.submit')}
             </Link>
           </p>
         </CardContent>

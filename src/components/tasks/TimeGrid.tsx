@@ -1,7 +1,7 @@
 import { TaskTimeBlock } from '@/components/tasks/TaskTimeBlock'
 import { WeekdayLabel } from '@/components/tasks/WeekdayLabel'
+import { useFormatters } from '@/providers/AppPreferencesProvider'
 import {
-  formatTimelineLabel,
   getTaskIntervalOnDay,
   getTimeGridStyle,
   isToday,
@@ -32,6 +32,7 @@ export function TimeGrid({
   onTaskSelect,
   onToggle,
 }: TimeGridProps) {
+  const { formatTimelineLabel } = useFormatters()
   const columnCount = days.length
   const showWeekdayHeaders = columnCount > 1
   const isWeekView = columnCount > 1

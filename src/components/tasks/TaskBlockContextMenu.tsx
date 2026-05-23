@@ -1,5 +1,6 @@
 import { Square, SquareCheck } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { Task } from '@/lib/task-calendar'
 import {
@@ -22,6 +23,8 @@ export function TaskBlockContextMenu({
   onToggle,
   children,
 }: TaskBlockContextMenuProps) {
+  const { t } = useTranslation('tasks')
+
   return (
     <ContextMenu>
       <ContextMenuTrigger
@@ -38,7 +41,7 @@ export function TaskBlockContextMenu({
             onSelect={() => onToggle(task, false)}
           >
             <Square className="size-4 text-muted-foreground" aria-hidden />
-            Mark as incomplete
+            {t('contextMenu.markIncomplete')}
           </ContextMenuItem>
         ) : (
           <ContextMenuItem
@@ -46,7 +49,7 @@ export function TaskBlockContextMenu({
             onSelect={() => onToggle(task, true)}
           >
             <SquareCheck className="size-4 text-primary" aria-hidden />
-            Mark as completed
+            {t('contextMenu.markCompleted')}
           </ContextMenuItem>
         )}
       </ContextMenuContent>

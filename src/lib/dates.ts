@@ -44,30 +44,3 @@ export function parseDatetimeLocalValue(
   return new Date(ms)
 }
 
-const displayFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-})
-
-export function formatTaskTimestamp(date: Date | null | undefined): string {
-  if (!date) {
-    return ''
-  }
-  return displayFormatter.format(date)
-}
-
-export function formatTaskRange(
-  start: Date | null | undefined,
-  end: Date | null | undefined,
-): string | null {
-  if (!start && !end) {
-    return null
-  }
-  if (start && end) {
-    return `${formatTaskTimestamp(start)} → ${formatTaskTimestamp(end)}`
-  }
-  if (start) {
-    return `Starts ${formatTaskTimestamp(start)}`
-  }
-  return `Ends ${formatTaskTimestamp(end!)}`
-}

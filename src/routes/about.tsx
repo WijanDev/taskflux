@@ -9,6 +9,7 @@ import {
   Lock,
   Sparkles,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { DeployToCloudflareLink } from '@/components/DeployToCloudflareLink'
 import { PageShell } from '@/components/PageShell'
@@ -27,50 +28,14 @@ export const Route = createFileRoute('/about')({
   component: About,
 })
 
-const principles = [
-  {
-    title: 'Private by default',
-    description:
-      'Your tasks stay yours. Every action is tied to your account—no shared lists, no surprises.',
-  },
-  {
-    title: 'Simple, not shallow',
-    description:
-      'A clean interface today, with room to grow. Enough structure to rely on, without feature bloat.',
-  },
-  {
-    title: 'Edge-first',
-    description:
-      'Built on Cloudflare Workers and D1 so it stays fast wherever you open it.',
-  },
-] as const
+const principleKeys = ['private', 'simple', 'edge'] as const
 
-const stack = [
-  {
-    icon: Layers,
-    name: 'TanStack Start',
-    role: 'Routing, SSR, and server functions',
-  },
-  {
-    icon: Cloud,
-    name: 'Cloudflare Workers',
-    role: 'Global edge runtime and deployment',
-  },
-  {
-    icon: Database,
-    name: 'D1 + Drizzle',
-    role: 'SQLite at the edge with type-safe queries',
-  },
-  {
-    icon: Lock,
-    name: 'Better Auth',
-    role: 'Email/password sign-in and sessions',
-  },
-  {
-    icon: Sparkles,
-    name: 'shadcn/ui',
-    role: 'Accessible components and Tailwind v4 styling',
-  },
+const stackMeta = [
+  { key: 'tanstack', icon: Layers },
+  { key: 'cloudflare', icon: Cloud },
+  { key: 'd1', icon: Database },
+  { key: 'auth', icon: Lock },
+  { key: 'ui', icon: Sparkles },
 ] as const
 
 function AboutBadge({
@@ -100,21 +65,21 @@ function AboutBadge({
 }
 
 function About() {
+  const { t } = useTranslation('about')
+
   return (
     <PageShell wide className="py-16 md:py-24">
       <div className="flex flex-col gap-20 md:gap-28">
         <section className="max-w-2xl space-y-8 md:space-y-10">
           <p className="text-xs font-medium tracking-[0.2em] text-primary uppercase">
-            About TaskFlux
+            {t('eyebrow')}
           </p>
           <h1 className="text-4xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-5xl">
-            A task manager that finally{' '}
-            <span className="text-primary">fits the work.</span>
+            {t('heroTitle')}{' '}
+            <span className="text-primary">{t('heroTitleAccent')}</span>
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            Not another productivity platform—a focused list you can trust,
-            shaped by someone who kept bouncing off tools that were either too
-            heavy or too rigid.
+            {t('heroDescription')}
           </p>
         </section>
 
@@ -134,18 +99,18 @@ function About() {
                     Wijan Ruiz
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Software engineer
+                    {t('profileRole')}
                   </p>
                   <div className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
                     <AboutBadge href={GITHUB_REPO}>
                       <Github className="mr-1.5 size-3" />
-                      Source code
+                      {t('badgeSource')}
                     </AboutBadge>
                     <AboutBadge>
                       <Cloud className="mr-1.5 size-3" />
-                      Self-hostable
+                      {t('badgeSelfHost')}
                     </AboutBadge>
-                    <AboutBadge>Hosted service</AboutBadge>
+                    <AboutBadge>{t('badgeHosted')}</AboutBadge>
                   </div>
                   <div className="mt-6 flex flex-col items-center gap-3 lg:items-start">
                     <DeployToCloudflareLink />
@@ -156,7 +121,7 @@ function About() {
                         rel="noopener noreferrer"
                       >
                         <Github className="size-4" />
-                        View repository
+                        {t('viewRepository')}
                       </a>
                     </Button>
                   </div>
@@ -164,43 +129,29 @@ function About() {
 
                 <div className="min-w-0 flex-1 space-y-5 border-border/60 lg:border-l lg:pl-14">
                   <p className="text-base leading-relaxed text-foreground md:text-lg">
-                    I&apos;ve always struggled with task management. Not because
-                    I don&apos;t care about getting things done—but because most
-                    apps never quite matched how I think and work.
+                    {t('story1')}
                   </p>
                   <p className="leading-relaxed text-muted-foreground">
-                    Some were packed with features I&apos;d never touch. Others
-                    were beautifully minimal until I needed a little more
-                    control. I wanted something{' '}
-                    <span className="font-medium text-foreground">
-                      simple at a glance, customizable underneath
-                    </span>
-                    —so I built TaskFlux for myself.
+                    {t('story2')}
                   </p>
                   <p className="leading-relaxed text-muted-foreground">
-                    I use it every day. The project is{' '}
+                    {t('story3Before')}{' '}
                     <a
                       href={GITHUB_REPO}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-medium text-primary underline-offset-4 hover:underline"
                     >
-                      open source on GitHub
+                      {t('story3Link')}
                     </a>
-                    , but self-hosting means running it on{' '}
+                    {t('story3Middle')}{' '}
                     <span className="font-medium text-foreground">
-                      your own Cloudflare account
-                    </span>
-                    —Workers, D1, and your data stay under your control. Use the
-                    official Deploy to Cloudflare button to fork the repo, provision
-                    resources, and ship in a few clicks. The hosted version is the
-                    same app, maintained for anyone who prefers to sign up and
-                    start in seconds.
+                      {t('story3Emphasis')}
+                    </span>{' '}
+                    {t('story3After')}
                   </p>
                   <p className="border-l-2 border-primary/40 pl-4 text-sm leading-relaxed text-muted-foreground italic">
-                    If you&apos;ve felt the same friction with task apps,
-                    TaskFlux is my attempt to offer a calmer default—and a base
-                    you can make your own.
+                    {t('storyQuote')}
                   </p>
                 </div>
               </div>
@@ -211,20 +162,20 @@ function About() {
         <section className="space-y-8">
           <div className="max-w-xl space-y-2">
             <h2 className="text-sm font-medium tracking-wide text-foreground uppercase">
-              What I optimized for
+              {t('principlesTitle')}
             </h2>
-            <p className="text-muted-foreground">
-              The product choices behind TaskFlux—kept intentionally small.
-            </p>
+            <p className="text-muted-foreground">{t('principlesDescription')}</p>
           </div>
           <ul className="m-0 grid list-none gap-6 p-0 md:grid-cols-3 md:gap-8">
-            {principles.map(({ title, description }) => (
-              <li key={title}>
+            {principleKeys.map((key) => (
+              <li key={key}>
                 <Card className="h-full border-border/80 shadow-none">
                   <CardHeader className="gap-3 px-6 py-8">
-                    <CardTitle className="text-base">{title}</CardTitle>
+                    <CardTitle className="text-base">
+                      {t(`principles.${key}.title`)}
+                    </CardTitle>
                     <CardDescription className="leading-relaxed">
-                      {description}
+                      {t(`principles.${key}.description`)}
                     </CardDescription>
                   </CardHeader>
                 </Card>
@@ -236,25 +187,23 @@ function About() {
         <section className="space-y-8">
           <div className="max-w-xl space-y-2">
             <h2 className="text-sm font-medium tracking-wide text-foreground uppercase">
-              Under the hood
+              {t('stackTitle')}
             </h2>
-            <p className="text-muted-foreground">
-              Open, familiar tools—composed for speed and maintainability.
-            </p>
+            <p className="text-muted-foreground">{t('stackDescription')}</p>
           </div>
           <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:gap-5">
-            {stack.map(({ icon: Icon, name, role }) => (
-              <li key={name}>
+            {stackMeta.map(({ key, icon: Icon }) => (
+              <li key={key}>
                 <div className="flex gap-4 rounded-xl border border-border/80 bg-card px-5 py-5 transition-colors hover:border-primary/25 hover:bg-accent/20">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary/10 text-primary">
                     <Icon className="size-4" />
                   </div>
                   <div className="min-w-0 space-y-1">
                     <p className="text-sm font-semibold text-foreground">
-                      {name}
+                      {t(`stack.${key}.name`)}
                     </p>
                     <p className="text-sm leading-relaxed text-muted-foreground">
-                      {role}
+                      {t(`stack.${key}.role`)}
                     </p>
                   </div>
                 </div>
@@ -269,32 +218,31 @@ function About() {
               <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                 <div className="max-w-md space-y-2">
                   <p className="text-lg font-semibold text-foreground">
-                    Use it your way
+                    {t('ctaTitle')}
                   </p>
                   <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-                    Try the hosted service, deploy your own instance on
-                    Cloudflare, or browse the source on GitHub.
+                    {t('ctaDescription')}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <Button asChild size="lg">
                     <Link to="/tasks">
-                      Open tasks
+                      {t('openTasks')}
                       <ArrowRight className="size-4" />
                     </Link>
                   </Button>
                   <Button variant="outline" size="lg" asChild>
-                    <Link to="/signup">Sign up</Link>
+                    <Link to="/signup">{t('signUp')}</Link>
                   </Button>
                 </div>
               </div>
               <div className="flex flex-col gap-4 border-t border-border/60 pt-8 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-foreground">
-                    Self-host on Cloudflare
+                    {t('selfHostTitle')}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    One-click deploy to your Workers account (D1 included).
+                    {t('selfHostDescription')}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
@@ -306,7 +254,7 @@ function About() {
                       rel="noopener noreferrer"
                     >
                       <Github className="size-4" />
-                      Source on GitHub
+                      {t('sourceOnGithub')}
                     </a>
                   </Button>
                 </div>

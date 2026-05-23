@@ -1,10 +1,14 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
+import { calendarPeriodEnterClass } from '@/components/tasks/CalendarPeriodTransition'
 import { Button } from '@/components/ui/button'
+import type { CalendarNavDirection } from '@/hooks/use-calendar-period-navigation'
 import { cn } from '@/lib/utils'
 
 type CalendarNavProps = {
   title: string
+  periodKey: string
+  enterDirection?: CalendarNavDirection | null
   onPrevious: () => void
   onNext: () => void
   previousLabel: string
@@ -14,6 +18,8 @@ type CalendarNavProps = {
 
 export function CalendarNav({
   title,
+  periodKey,
+  enterDirection = null,
   onPrevious,
   onNext,
   previousLabel,
@@ -37,7 +43,13 @@ export function CalendarNav({
       >
         <ChevronLeft className="size-4" />
       </Button>
-      <h2 className="min-w-0 flex-1 truncate px-1 text-center text-sm font-semibold tracking-tight sm:mx-4 sm:text-base md:text-lg">
+      <h2
+        key={periodKey}
+        className={cn(
+          'min-w-0 flex-1 truncate px-1 text-center text-sm font-semibold tracking-tight sm:mx-4 sm:text-base md:text-lg',
+          calendarPeriodEnterClass(enterDirection),
+        )}
+      >
         {title}
       </h2>
       <Button

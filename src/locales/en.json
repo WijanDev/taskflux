@@ -1,0 +1,278 @@
+{
+  "common": {
+    "appName": "TaskFlux",
+    "nav": {
+      "home": "Home",
+      "tasks": "Tasks",
+      "about": "About",
+      "settings": "Settings"
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "close": "Close",
+      "backToHome": "Back to home",
+      "openTasks": "Open tasks",
+      "pleaseWait": "Please wait…",
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…"
+    },
+    "labels": {
+      "title": "Title",
+      "email": "Email",
+      "password": "Password",
+      "name": "Name",
+      "start": "Start",
+      "end": "End",
+      "status": "Status",
+      "created": "Created",
+      "updated": "Updated",
+      "schedule": "Schedule",
+      "language": "Language"
+    },
+    "loading": "…",
+    "accountMenu": "Account menu",
+    "guestLanguage": "Language"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "description": "Welcome back. Enter your credentials to continue.",
+      "submit": "Sign in",
+      "alternate": "Don't have an account?",
+      "failed": "Sign in failed"
+    },
+    "signUp": {
+      "title": "Create account",
+      "description": "Get started with TaskFlux in a few seconds.",
+      "submit": "Create account",
+      "alternate": "Already have an account?",
+      "failed": "Sign up failed"
+    }
+  },
+  "home": {
+    "eyebrow": "Task management",
+    "title": "Minimal tasks.",
+    "titleAccent": "Electric focus.",
+    "description": "TaskFlux is a lightweight task list with authentication, built for speed on Cloudflare and styled with shadcn/ui.",
+    "openTasks": "Open tasks",
+    "about": "About",
+    "builtForClarity": "Built for clarity",
+    "builtForClarityDescription": "Everything you need, nothing you don't.",
+    "features": {
+      "private": {
+        "title": "Your tasks only",
+        "description": "Every task is scoped to your account. Private by default."
+      },
+      "fast": {
+        "title": "Fast edge stack",
+        "description": "TanStack Start on Cloudflare Workers with D1 at the edge."
+      },
+      "secure": {
+        "title": "Secure auth",
+        "description": "Email and password via Better Auth with session cookies."
+      }
+    },
+    "cta": "Sign in to sync tasks across devices. New here?",
+    "createAccount": "Create an account"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Preferences saved to your account.",
+    "languageRegion": {
+      "title": "Language & region",
+      "description": "Choose your preferred language. More languages will be added over time."
+    },
+    "time": {
+      "title": "Time",
+      "description": "How times appear in the calendar and task lists.",
+      "formatLabel": "Time format"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Theme preference for this app on all your devices when signed in.",
+      "themeLabel": "Theme"
+    },
+    "save": "Save settings",
+    "saving": "Saving…",
+    "toast": {
+      "successTitle": "Settings saved",
+      "successDescription": "Your preferences have been updated.",
+      "errorTitle": "Could not save settings",
+      "errorDescription": "Something went wrong. Try again."
+    },
+    "options": {
+      "locale": {
+        "en": "English",
+        "es": "Español"
+      },
+      "timeFormat": {
+        "12h": "12-hour (AM / PM)",
+        "24h": "24-hour"
+      },
+      "theme": {
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "System"
+      }
+    }
+  },
+  "tasks": {
+    "range": {
+      "both": "{{start}} → {{end}}",
+      "starts": "Starts {{time}}",
+      "ends": "Ends {{time}}"
+    },
+    "schedule": {
+      "startPlaceholder": "Start date & time",
+      "endPlaceholder": "End date & time",
+      "none": "No schedule — add times when editing."
+    },
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "markedComplete": "Marked complete",
+      "stillOpen": "Still open"
+    },
+    "new": {
+      "title": "New task",
+      "description": "Give it a title and optional start and end times.",
+      "titlePlaceholder": "What do you need to do?",
+      "submit": "Add task"
+    },
+    "detail": {
+      "title": "Task details",
+      "description": "View or update this task."
+    },
+    "edit": {
+      "title": "Edit task",
+      "description": "Update the title or schedule for this task.",
+      "saveChanges": "Save changes"
+    },
+    "unscheduledLabel": "Unscheduled",
+    "toolbar": {
+      "addTask": "Add task",
+      "taskView": "Task view"
+    },
+    "viewMode": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "nav": {
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "previousWeek": "Previous week",
+      "nextWeek": "Next week",
+      "previousDay": "Previous day",
+      "nextDay": "Next day"
+    },
+    "unscheduled": {
+      "title": "Unscheduled",
+      "subtitle": "No start or end time",
+      "empty": "No unscheduled tasks.",
+      "count_zero": "No tasks",
+      "count_one": "1 task",
+      "count_other": "{{count}} tasks"
+    },
+    "aria": {
+      "markComplete": "Mark complete",
+      "markIncomplete": "Mark incomplete",
+      "editTask": "Edit task",
+      "deleteTask": "Delete task"
+    },
+    "contextMenu": {
+      "markCompleted": "Mark as completed",
+      "markIncomplete": "Mark as incomplete"
+    }
+  },
+  "calendar": {
+    "today": "Today",
+    "noTasksScheduled": "No tasks scheduled",
+    "emptyMonth": "No scheduled tasks this month.",
+    "moreTasks": "+{{count}} more"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "invalidDate": "Invalid date",
+    "endBeforeStart": "End must be on or after start"
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or may have been moved."
+  },
+  "footer": {
+    "stack": "TanStack Start · Cloudflare · Better Auth"
+  },
+  "about": {
+    "eyebrow": "About TaskFlux",
+    "heroTitle": "A task manager that finally",
+    "heroTitleAccent": "fits the work.",
+    "heroDescription": "Not another productivity platform—a focused list you can trust, shaped by someone who kept bouncing off tools that were either too heavy or too rigid.",
+    "profileRole": "Software engineer",
+    "badgeSource": "Source code",
+    "badgeSelfHost": "Self-hostable",
+    "badgeHosted": "Hosted service",
+    "viewRepository": "View repository",
+    "story1": "I've always struggled with task management. Not because I don't care about getting things done—but because most apps never quite matched how I think and work.",
+    "story2": "Some were packed with features I'd never touch. Others were beautifully minimal until I needed a little more control. I wanted something simple at a glance, customizable underneath—so I built TaskFlux for myself.",
+    "story3Before": "I use it every day. The project is",
+    "story3Link": "open source on GitHub",
+    "story3Middle": ", but self-hosting means running it on",
+    "story3Emphasis": "your own Cloudflare account",
+    "story3After": "—Workers, D1, and your data stay under your control. Use the official Deploy to Cloudflare button to fork the repo, provision resources, and ship in a few clicks. The hosted version is the same app, maintained for anyone who prefers to sign up and start in seconds.",
+    "storyQuote": "If you've felt the same friction with task apps, TaskFlux is my attempt to offer a calmer default—and a base you can make your own.",
+    "principlesTitle": "What I optimized for",
+    "principlesDescription": "The product choices behind TaskFlux—kept intentionally small.",
+    "stackTitle": "Under the hood",
+    "stackDescription": "Open, familiar tools—composed for speed and maintainability.",
+    "principles": {
+      "private": {
+        "title": "Private by default",
+        "description": "Your tasks stay yours. Every action is tied to your account—no shared lists, no surprises."
+      },
+      "simple": {
+        "title": "Simple, not shallow",
+        "description": "A clean interface today, with room to grow. Enough structure to rely on, without feature bloat."
+      },
+      "edge": {
+        "title": "Edge-first",
+        "description": "Built on Cloudflare Workers and D1 so it stays fast wherever you open it."
+      }
+    },
+    "stack": {
+      "tanstack": {
+        "name": "TanStack Start",
+        "role": "Routing, SSR, and server functions"
+      },
+      "cloudflare": {
+        "name": "Cloudflare Workers",
+        "role": "Global edge runtime and deployment"
+      },
+      "d1": {
+        "name": "D1 + Drizzle",
+        "role": "SQLite at the edge with type-safe queries"
+      },
+      "auth": {
+        "name": "Better Auth",
+        "role": "Email/password sign-in and sessions"
+      },
+      "ui": {
+        "name": "shadcn/ui",
+        "role": "Accessible components and Tailwind v4 styling"
+      }
+    },
+    "ctaTitle": "Use it your way",
+    "ctaDescription": "Try the hosted service, deploy your own instance on Cloudflare, or browse the source on GitHub.",
+    "openTasks": "Open tasks",
+    "signUp": "Sign up",
+    "selfHostTitle": "Self-host on Cloudflare",
+    "selfHostDescription": "One-click deploy to your Workers account (D1 included).",
+    "sourceOnGithub": "Source on GitHub"
+  }
+}

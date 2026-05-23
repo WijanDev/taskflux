@@ -1,4 +1,4 @@
-import { WEEKDAY_LABELS, WEEKDAY_LABELS_SHORT } from '@/lib/task-calendar'
+import { useFormatters } from '@/providers/AppPreferencesProvider'
 
 type WeekdayLabelProps = {
   index: number
@@ -6,10 +6,12 @@ type WeekdayLabelProps = {
 }
 
 export function WeekdayLabel({ index, className }: WeekdayLabelProps) {
+  const { formatWeekday } = useFormatters()
+
   return (
     <span className={className}>
-      <span className="sm:hidden">{WEEKDAY_LABELS_SHORT[index]}</span>
-      <span className="hidden sm:inline">{WEEKDAY_LABELS[index]}</span>
+      <span className="sm:hidden">{formatWeekday(index, true)}</span>
+      <span className="hidden sm:inline">{formatWeekday(index, false)}</span>
     </span>
   )
 }

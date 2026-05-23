@@ -15,10 +15,8 @@ import {
   TaskStatusBadge,
 } from '@/components/tasks/TaskDialogChrome'
 import type { Task } from '@/lib/task-calendar'
-import {
-  formatTaskRange,
-  formatTaskTimestamp,
-} from '@/lib/dates'
+import { useFormatters } from '@/providers/AppPreferencesProvider'
+import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -68,6 +66,9 @@ export function TaskDetailDialog({
   onEditStartChange,
   onEditEndChange,
 }: TaskDetailDialogProps) {
+  const { t } = useTranslation(['tasks', 'common'])
+  const { formatTaskRange, formatTaskTimestamp } = useFormatters()
+
   if (!task) {
     return null
   }
@@ -89,8 +90,8 @@ export function TaskDetailDialog({
           <>
             <TaskDialogHeader
               icon={Pencil}
-              title="Edit task"
-              description="Update the title or schedule for this task."
+              title={t('tasks:edit.title')}
+              description={t('tasks:edit.description')}
             />
             <DialogBody className="space-y-5">
               {error ? (
@@ -99,7 +100,9 @@ export function TaskDetailDialog({
                 </Alert>
               ) : null}
               <div className="grid gap-2.5">
-                <Label htmlFor={`detail-edit-title-${task.id}`}>Title</Label>
+                <Label htmlFor={`detail-edit-title-${task.id}`}>
+                  {t('common:labels.title')}
+                </Label>
                 <Input
                   id={`detail-edit-title-${task.id}`}
                   type="text"
@@ -126,14 +129,14 @@ export function TaskDetailDialog({
                 disabled={pending}
                 onClick={onCancelEdit}
               >
-                Cancel
+                {t('common:actions.cancel')}
               </Button>
               <Button
                 type="button"
                 disabled={pending || !editTitle.trim()}
                 onClick={onSaveEdit}
               >
-                Save changes
+                {t('tasks:edit.saveChanges')}
               </Button>
             </DialogFooter>
           </>
@@ -147,7 +150,7 @@ export function TaskDetailDialog({
               description={
                 hasSchedule
                   ? (rangeLabel ?? undefined)
-                  : 'No schedule — add times when editing.'
+                  : t('tasks:schedule.none')
               }
             />
             <DialogBody className="space-y-5">
@@ -160,24 +163,26 @@ export function TaskDetailDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <TaskMetaItem
                   icon={task.completed ? CheckCircle2 : CircleDashed}
-                  label="Status"
+                  label={t('common:labels.status')}
                   value={
                     <span
                       className={cn(
                         task.completed && 'text-muted-foreground line-through',
                       )}
                     >
-                      {task.completed ? 'Marked complete' : 'Still open'}
+                      {task.completed
+                        ? t('tasks:status.markedComplete')
+                        : t('tasks:status.stillOpen')}
                     </span>
                   }
                 />
                 <TaskMetaItem
                   icon={CalendarRange}
-                  label="Schedule"
+                  label={t('common:labels.schedule')}
                   value={
                     rangeLabel ?? (
                       <span className="font-normal text-muted-foreground">
-                        Unscheduled
+                        {t('tasks:unscheduledLabel')}
                       </span>
                     )
                   }
@@ -185,12 +190,12 @@ export function TaskDetailDialog({
                 />
                 <TaskMetaItem
                   icon={Clock}
-                  label="Created"
+                  label={t('common:labels.created')}
                   value={formatTaskTimestamp(task.createdAt)}
                 />
                 <TaskMetaItem
                   icon={Clock}
-                  label="Updated"
+                  label={t('common:labels.updated')}
                   value={formatTaskTimestamp(task.updatedAt)}
                 />
               </div>
@@ -203,7 +208,7 @@ export function TaskDetailDialog({
                 onClick={onDelete}
               >
                 <Trash2 className="size-4" />
-                Delete
+                {t('common:actions.delete')}
               </Button>
               <Button
                 type="button"
@@ -213,7 +218,7 @@ export function TaskDetailDialog({
                 onClick={onStartEdit}
               >
                 <Pencil className="size-4" />
-                Edit task
+                {t('tasks:aria.editTask')}
               </Button>
             </DialogFooter>
           </>

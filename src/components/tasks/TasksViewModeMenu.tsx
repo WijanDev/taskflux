@@ -22,9 +22,15 @@ type MenuPosition = {
 type TasksViewModeMenuProps = {
   value: TasksViewMode
   onChange: (mode: TasksViewMode) => void
+  /** Icon-only trigger on small screens */
+  compact?: boolean
 }
 
-export function TasksViewModeMenu({ value, onChange }: TasksViewModeMenuProps) {
+export function TasksViewModeMenu({
+  value,
+  onChange,
+  compact = false,
+}: TasksViewModeMenuProps) {
   const [open, setOpen] = useState(false)
   const [position, setPosition] = useState<MenuPosition>({ top: 0, left: 0, minWidth: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -132,15 +138,23 @@ export function TasksViewModeMenu({ value, onChange }: TasksViewModeMenuProps) {
       <Button
         type="button"
         variant="outline"
-        className="h-9 gap-1.5 px-3"
+        className={cn(
+          'h-9 gap-1.5',
+          compact ? 'px-2.5' : 'px-3',
+        )}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={compact ? `View: ${active.label}` : undefined}
         onClick={toggleOpen}
       >
-        <active.icon className="size-4" aria-hidden />
-        {active.label}
+        <active.icon className="size-4 shrink-0" aria-hidden />
+        {compact ? (
+          <span className="sr-only">{active.label}</span>
+        ) : (
+          active.label
+        )}
         <ChevronDown
-          className={cn('size-4 transition-transform', open && 'rotate-180')}
+          className={cn('size-4 shrink-0 transition-transform', open && 'rotate-180')}
           aria-hidden
         />
       </Button>

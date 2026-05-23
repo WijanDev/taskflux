@@ -18,7 +18,9 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
     if (!dialog) return
 
     if (open && !dialog.open) {
-      dialog.showModal()
+      // Use show() so portaled popovers (date picker) can stack above via z-index.
+      // showModal() renders in the browser top layer, which sits above all portals.
+      dialog.show()
     } else if (!open && dialog.open) {
       dialog.close()
     }

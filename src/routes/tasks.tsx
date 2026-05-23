@@ -1,37 +1,19 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-
 import { useEffect, useMemo, useState } from 'react'
 
 import type { tasks } from '#/db/schema'
-
 import { PageShell } from '@/components/PageShell'
 import { NewTaskDialog } from '@/components/tasks/NewTaskDialog'
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
-
-import { CalendarNav } from '@/components/tasks/CalendarNav'
-
 import { DayTasksView } from '@/components/tasks/DayTasksView'
-
 import { MonthCalendarView } from '@/components/tasks/MonthCalendarView'
-
 import type { TaskListActions } from '@/components/tasks/TaskListItem'
-
-import { TasksViewModeMenu } from '@/components/tasks/TasksViewModeMenu'
-
+import { TasksCalendarToolbar } from '@/components/tasks/TasksCalendarToolbar'
 import { UnscheduledTasksPanel } from '@/components/tasks/UnscheduledTasksPanel'
-
 import { WeekCalendarView } from '@/components/tasks/WeekCalendarView'
-
 import { Alert, AlertDescription } from '@/components/ui/alert'
-
-import { Button } from '@/components/ui/button'
-
 import { Card, CardContent } from '@/components/ui/card'
-import { Plus } from 'lucide-react'
-
 import { toDatetimeLocalValue } from '@/lib/dates'
-import { cn } from '@/lib/utils'
-
 import {
   formatDayTitle,
   formatMonthYear,
@@ -42,7 +24,6 @@ import {
   tasksSearchSchema,
   useTasksUrlState,
 } from '@/lib/tasks-search-params'
-
 import {
   createTask,
   deleteTask,
@@ -61,7 +42,6 @@ export const Route = createFileRoute('/tasks')({
     if (!session?.user) {
       throw redirect({
         to: '/signin',
-
         search: { redirect: '/tasks' },
       })
     }
@@ -78,7 +58,6 @@ type Task = typeof tasks.$inferSelect
 
 function TasksPage() {
   const router = useRouter()
-
   const taskList = Route.useLoaderData()
 
   const {
@@ -96,27 +75,18 @@ function TasksPage() {
   } = useTasksUrlState()
 
   const [newTitle, setNewTitle] = useState('')
-
   const [newStartAt, setNewStartAt] = useState('')
-
   const [newEndAt, setNewEndAt] = useState('')
-
   const [editingId, setEditingId] = useState<number | null>(null)
-
   const [editTitle, setEditTitle] = useState('')
-
   const [editStartAt, setEditStartAt] = useState('')
-
   const [editEndAt, setEditEndAt] = useState('')
-
   const [pending, setPending] = useState(false)
-
   const [error, setError] = useState<string | null>(null)
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
   const { scheduled, unscheduled } = useMemo(
     () => partitionTasks(taskList),
-
     [taskList],
   )
 
@@ -152,12 +122,9 @@ function TasksPage() {
 
   async function runAction(action: () => Promise<unknown>) {
     setPending(true)
-
     setError(null)
-
     try {
       await action()
-
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -168,40 +135,29 @@ function TasksPage() {
 
   function clearNewForm() {
     setNewTitle('')
-
     setNewStartAt('')
-
     setNewEndAt('')
   }
 
   function clearEditForm() {
     setEditingId(null)
-
     setEditTitle('')
-
     setEditStartAt('')
-
     setEditEndAt('')
   }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault()
-
     const title = newTitle.trim()
-
     if (!title) return
-
     await runAction(async () => {
       await createTask({
         data: {
           title,
-
           taskStartAt: newStartAt || null,
-
           taskEndsAt: newEndAt || null,
         },
       })
-
       clearNewForm()
       setAddDialogOpen(false)
     })
@@ -215,22 +171,16 @@ function TasksPage() {
 
   async function handleSaveEdit(id: number) {
     const title = editTitle.trim()
-
     if (!title) return
-
     await runAction(async () => {
       await updateTask({
         data: {
           id,
-
           title,
-
           taskStartAt: editStartAt || null,
-
           taskEndsAt: editEndAt || null,
         },
       })
-
       clearEditForm()
     })
   }
@@ -246,39 +196,24 @@ function TasksPage() {
 
   function startEdit(task: Task) {
     setEditingId(task.id)
-
     setEditTitle(task.title)
-
     setEditStartAt(toDatetimeLocalValue(task.taskStartAt))
-
     setEditEndAt(toDatetimeLocalValue(task.taskEndsAt))
   }
 
   const listActions: TaskListActions = {
     pending,
-
     editingId,
-
     editTitle,
-
     editStartAt,
-
     editEndAt,
-
     onToggle: handleToggle,
-
     onStartEdit: startEdit,
-
     onSaveEdit: handleSaveEdit,
-
     onCancelEdit: clearEditForm,
-
     onDelete: handleDelete,
-
     onEditTitleChange: setEditTitle,
-
     onEditStartChange: setEditStartAt,
-
     onEditEndChange: setEditEndAt,
   }
 
@@ -304,7 +239,7 @@ function TasksPage() {
         : 'Next day'
 
   return (
-    <PageShell full fluid className="px-0 py-2 md:py-3">
+    <PageShell full fluid className="px-2 py-2 sm:px-0 md:py-3">
       <TaskDetailDialog
         task={selectedTask}
         open={detailDialogOpen}
@@ -340,47 +275,34 @@ function TasksPage() {
         onSubmit={handleAdd}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden lg:flex-row lg:items-stretch">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden lg:flex-row lg:items-stretch lg:gap-4">
         <UnscheduledTasksPanel
           tasks={unscheduled}
           actions={listActions}
-          className="min-h-0 max-h-48 shrink-0 overflow-hidden lg:max-h-none lg:self-stretch"
+          className="lg:self-stretch"
         />
 
-        <Card className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 overflow-hidden py-0">
-          <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden py-4">
+        <Card className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 overflow-hidden rounded-xl py-0">
+          <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3 sm:gap-4 sm:p-4">
             {error && !addDialogOpen && !detailDialogOpen ? (
               <Alert variant="destructive" className="shrink-0">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
 
-            <div className="relative z-30 flex shrink-0 items-center gap-3 overflow-visible">
-              <TasksViewModeMenu value={viewMode} onChange={setViewMode} />
-
-              <div className="flex min-w-0 flex-1 justify-center">
-                <CalendarNav
-                  title={periodTitle}
-                  onPrevious={goToPreviousPeriod}
-                  onNext={goToNextPeriod}
-                  previousLabel={previousLabel}
-                  nextLabel={nextLabel}
-                />
-              </div>
-
-              <Button
-                type="button"
-                size="icon"
-                aria-label="Add task"
-                onClick={() => setAddDialogOpen(true)}
-              >
-                <Plus className="size-5" />
-              </Button>
-            </div>
+            <TasksCalendarToolbar
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              periodTitle={periodTitle}
+              onPrevious={goToPreviousPeriod}
+              onNext={goToNextPeriod}
+              previousLabel={previousLabel}
+              nextLabel={nextLabel}
+              onAddTask={() => setAddDialogOpen(true)}
+            />
 
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               {viewMode === 'monthly' ? (
-                <div className="flex h-full min-h-0 flex-col overflow-hidden">
                 <MonthCalendarView
                   year={viewYear}
                   month={viewMonth}
@@ -388,7 +310,6 @@ function TasksPage() {
                   actions={listActions}
                   onTaskSelect={openTaskDetail}
                 />
-                </div>
               ) : null}
 
               {viewMode === 'weekly' ? (

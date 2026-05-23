@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input'
+import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { Label } from '@/components/ui/label'
 
 type TaskScheduleFieldsProps = {
@@ -22,22 +22,22 @@ export function TaskScheduleFields({
     <div className="grid gap-3 sm:grid-cols-2">
       <div className="grid gap-1.5">
         <Label htmlFor={`${idPrefix}-start`}>Start</Label>
-        <Input
+        <DateTimePicker
           id={`${idPrefix}-start`}
-          type="datetime-local"
           value={startValue}
-          onChange={(e) => onStartChange(e.target.value)}
+          onChange={onStartChange}
           disabled={disabled}
+          placeholder="Start date & time"
         />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor={`${idPrefix}-end`}>End</Label>
-        <Input
+        <DateTimePicker
           id={`${idPrefix}-end`}
-          type="datetime-local"
           value={endValue}
-          onChange={(e) => onEndChange(e.target.value)}
+          onChange={onEndChange}
           disabled={disabled}
+          placeholder="End date & time"
         />
       </div>
     </div>

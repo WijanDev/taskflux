@@ -109,7 +109,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
         'rounded-lg border border-border/80 transition-colors hover:border-primary/20 hover:bg-accent/30',
         task.completed && 'bg-muted/30',
         compact
-          ? 'flex items-start gap-2 px-2 py-1.5'
+          ? 'flex items-start gap-2 px-2.5 py-2'
           : [
               'flex items-center gap-3 px-3 py-3',
               'md:grid md:grid-cols-[2.5rem_1fr_6.5rem] md:items-center md:gap-4 md:px-4 md:py-3.5',
@@ -154,19 +154,19 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
           type="button"
           variant="ghost"
           size="icon"
-          className={compact ? 'size-7' : undefined}
+          className={compact ? 'size-8' : undefined}
           disabled={pending}
           onClick={() => onStartEdit(task)}
           aria-label="Edit task"
         >
-          <Pencil className="size-3.5" />
+          <Pencil className={compact ? 'size-4' : 'size-3.5'} />
         </Button>
         <Button
           type="button"
           variant="ghost"
           size="icon"
           className={cn(
-            compact ? 'size-7' : undefined,
+            compact ? 'size-8' : undefined,
             'text-destructive hover:bg-destructive/10 hover:text-destructive',
           )}
           disabled={pending}

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type CalendarNavProps = {
   title: string
@@ -8,6 +9,7 @@ type CalendarNavProps = {
   onNext: () => void
   previousLabel: string
   nextLabel: string
+  className?: string
 }
 
 export function CalendarNav({
@@ -16,27 +18,33 @@ export function CalendarNav({
   onNext,
   previousLabel,
   nextLabel,
+  className,
 }: CalendarNavProps) {
   return (
-    <div className="flex min-w-0 max-w-full items-center justify-center gap-2">
+    <div
+      className={cn(
+        'flex min-w-0 max-w-full items-center justify-center gap-1 sm:gap-2',
+        className,
+      )}
+    >
       <Button
         type="button"
         variant="outline"
         size="icon"
-        className="shrink-0"
+        className="size-9 shrink-0 sm:size-9"
         onClick={onPrevious}
         aria-label={previousLabel}
       >
         <ChevronLeft className="size-4" />
       </Button>
-      <h2 className="mx-4 min-w-0 truncate text-center text-base font-semibold tracking-tight sm:mx-6 sm:text-lg">
+      <h2 className="min-w-0 flex-1 truncate px-1 text-center text-sm font-semibold tracking-tight sm:mx-4 sm:text-base md:text-lg">
         {title}
       </h2>
       <Button
         type="button"
         variant="outline"
         size="icon"
-        className="shrink-0"
+        className="size-9 shrink-0"
         onClick={onNext}
         aria-label={nextLabel}
       >

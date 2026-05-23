@@ -22,7 +22,7 @@ export function TaskCalendarItem({
           type="button"
           disabled={pending}
           className={cn(
-            'w-full cursor-pointer truncate rounded-sm px-1 py-0.5 text-left text-xs leading-snug transition-colors',
+            'w-full cursor-pointer truncate rounded-sm px-1 py-1 text-left text-[11px] leading-snug transition-colors sm:py-0.5 sm:text-xs',
             'hover:bg-accent/60 disabled:cursor-not-allowed disabled:opacity-60',
             task.completed
               ? 'text-muted-foreground line-through'

@@ -49,11 +49,39 @@ const displayFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: 'short',
 })
 
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  timeStyle: 'short',
+})
+
 export function formatTaskTimestamp(date: Date | null | undefined): string {
   if (!date) {
     return ''
   }
   return displayFormatter.format(date)
+}
+
+export function formatTaskTime(date: Date | null | undefined): string {
+  if (!date) {
+    return ''
+  }
+  return timeFormatter.format(date)
+}
+
+/** Compact time-only label for calendar month cells. */
+export function formatTaskTimeRange(
+  start: Date | null | undefined,
+  end: Date | null | undefined,
+): string | null {
+  if (!start && !end) {
+    return null
+  }
+  if (start && end) {
+    return `${formatTaskTime(start)} – ${formatTaskTime(end)}`
+  }
+  if (start) {
+    return formatTaskTime(start)
+  }
+  return formatTaskTime(end!)
 }
 
 export function formatTaskRange(

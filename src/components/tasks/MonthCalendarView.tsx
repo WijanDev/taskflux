@@ -5,7 +5,6 @@ import {
   getMonthGridDays,
   isToday,
   tasksForDay,
-  WEEKDAY_LABELS,
   type Task,
 } from '@/lib/task-calendar'
 import { cn } from '@/lib/utils'
@@ -33,8 +32,8 @@ export function MonthCalendarView({
         className="grid shrink-0 grid-cols-7 gap-0.5 text-center text-xs font-medium tracking-wide text-muted-foreground uppercase sm:gap-1"
         aria-hidden
       >
-        {WEEKDAY_LABELS.map((label, index) => (
-          <span key={label} className="py-1">
+        {Array.from({ length: 7 }, (_, index) => (
+          <span key={index} className="py-1">
             <WeekdayLabel index={index} />
           </span>
         ))}

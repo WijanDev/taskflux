@@ -1,4 +1,5 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import AuthForm from '#/components/AuthForm'
 import { authClient } from '#/lib/auth-client'
@@ -15,16 +16,17 @@ export const Route = createFileRoute('/signup')({
 })
 
 function SignUpPage() {
+  const { t } = useTranslation('auth')
   const router = useRouter()
 
   return (
     <AuthForm
       mode="signup"
-      title="Create account"
-      description="Get started with TaskFlux in a few seconds."
-      submitLabel="Create account"
+      title={t('signUp.title')}
+      description={t('signUp.description')}
+      submitLabel={t('signUp.submit')}
       alternate={{
-        label: 'Already have an account?',
+        label: t('signUp.alternate'),
         to: '/signin',
       }}
       onSubmit={async ({ name, email, password }) => {
@@ -34,7 +36,7 @@ function SignUpPage() {
           password,
         })
         if (result.error) {
-          throw new Error(result.error.message ?? 'Sign up failed')
+          throw new Error(result.error.message ?? t('signUp.failed'))
         }
         await router.navigate({ to: '/tasks' })
       }}

@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   TaskListItem,
@@ -26,10 +27,12 @@ function TaskListContent({
   tasks: Task[]
   actions: TaskListActions
 }) {
+  const { t } = useTranslation('tasks')
+
   if (tasks.length === 0) {
     return (
       <p className="py-2 text-center text-sm text-muted-foreground">
-        No unscheduled tasks.
+        {t('unscheduled.empty')}
       </p>
     )
   }
@@ -48,16 +51,12 @@ export function UnscheduledTasksPanel({
   actions,
   className,
 }: UnscheduledTasksPanelProps) {
-  const countLabel =
-    tasks.length === 0
-      ? 'No tasks'
-      : tasks.length === 1
-        ? '1 task'
-        : `${tasks.length} tasks`
+  const { t } = useTranslation('tasks')
+
+  const countLabel = t('unscheduled.count', { count: tasks.length })
 
   return (
     <>
-      {/* Mobile: collapsible panel */}
       <details
         className={cn(
           'group w-full shrink-0 overflow-hidden rounded-xl border border-border/70 bg-card lg:hidden',
@@ -66,9 +65,9 @@ export function UnscheduledTasksPanel({
       >
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
           <div className="min-w-0 text-left">
-            <span className="text-sm font-semibold">Unscheduled</span>
+            <span className="text-sm font-semibold">{t('unscheduled.title')}</span>
             <p className="text-xs text-muted-foreground">
-              {countLabel} · no start or end time
+              {countLabel} · {t('unscheduled.subtitle')}
             </p>
           </div>
           <ChevronDown
@@ -81,7 +80,6 @@ export function UnscheduledTasksPanel({
         </div>
       </details>
 
-      {/* Desktop: sidebar */}
       <Card
         className={cn(
           'hidden min-h-0 w-full shrink-0 flex-col gap-0 overflow-hidden py-0 lg:flex lg:w-52 xl:w-56',
@@ -89,10 +87,8 @@ export function UnscheduledTasksPanel({
         )}
       >
         <CardHeader className="border-b border-border/60 px-4 py-3">
-          <CardTitle className="text-sm">Unscheduled</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            No start or end time
-          </p>
+          <CardTitle className="text-sm">{t('unscheduled.title')}</CardTitle>
+          <p className="text-xs text-muted-foreground">{t('unscheduled.subtitle')}</p>
         </CardHeader>
         <CardContent className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
           <TaskListContent tasks={tasks} actions={actions} />

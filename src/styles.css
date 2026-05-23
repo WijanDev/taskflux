@@ -127,4 +127,44 @@
   button:disabled {
     cursor: not-allowed;
   }
+
+  @keyframes page-exit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-0.75rem);
+    }
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-exit {
+    animation: page-exit var(--page-transition-duration, 320ms) ease-in both;
+    pointer-events: none;
+  }
+
+  .page-enter {
+    animation: page-enter var(--page-transition-duration, 320ms) ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-exit,
+    .page-enter {
+      animation: none;
+    }
+  }
 }

@@ -1,17 +1,20 @@
 import { CalendarDays, ChevronDown, LayoutGrid } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 import type { TasksViewMode } from '@/lib/task-calendar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const VIEW_OPTIONS: { value: TasksViewMode; label: string; icon: typeof LayoutGrid }[] =
-  [
-    { value: 'daily', label: 'Daily', icon: CalendarDays },
-    { value: 'weekly', label: 'Weekly', icon: CalendarDays },
-    { value: 'monthly', label: 'Monthly', icon: LayoutGrid },
-  ]
+const VIEW_OPTION_META: {
+  value: TasksViewMode
+  icon: typeof LayoutGrid
+}[] = [
+  { value: 'daily', icon: CalendarDays },
+  { value: 'weekly', icon: CalendarDays },
+  { value: 'monthly', icon: LayoutGrid },
+]
 
 type MenuPosition = {
   top: number
@@ -31,11 +34,22 @@ export function TasksViewModeMenu({
   onChange,
   compact = false,
 }: TasksViewModeMenuProps) {
+  const { t } = useTranslation('tasks')
   const [open, setOpen] = useState(false)
   const [position, setPosition] = useState<MenuPosition>({ top: 0, left: 0, minWidth: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLUListElement>(null)
-  const active = VIEW_OPTIONS.find((o) => o.value === value) ?? VIEW_OPTIONS[0]
+
+  const viewOptions = useMemo(
+    () =>
+      VIEW_OPTION_META.map((option) => ({
+        ...option,
+        label: t(`viewMode.${option.value}`),
+      })),
+    [t],
+  )
+
+  const active = viewOptions.find((o) => o.value === value) ?? viewOptions[0]!
 
   const updatePosition = useCallback(() => {
     const trigger = triggerRef.current
@@ -103,7 +117,7 @@ export function TasksViewModeMenu({
       <ul
         ref={menuRef}
         role="listbox"
-        aria-label="Task view"
+        aria-label={t('toolbar.taskView')}
         className="fixed z-[200] min-w-[9rem] rounded-md border border-border bg-popover p-1 shadow-lg"
         style={{
           top: position.top,
@@ -111,7 +125,7 @@ export function TasksViewModeMenu({
           minWidth: position.minWidth,
         }}
       >
-        {VIEW_OPTIONS.map((option) => (
+        {viewOptions.map((option) => (
           <li key={option.value} role="option" aria-selected={value === option.value}>
             <button
               type="button"

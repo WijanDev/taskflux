@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   DialogDescription,
@@ -80,6 +81,8 @@ export function TaskMetaItem({
 }
 
 export function TaskStatusBadge({ completed }: { completed: boolean }) {
+  const { t } = useTranslation('tasks')
+
   return (
     <span
       className={cn(
@@ -89,7 +92,7 @@ export function TaskStatusBadge({ completed }: { completed: boolean }) {
           : 'bg-primary/15 text-primary ring-1 ring-primary/25',
       )}
     >
-      {completed ? 'Completed' : 'In progress'}
+      {completed ? t('status.completed') : t('status.inProgress')}
     </span>
   )
 }

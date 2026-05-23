@@ -1,0 +1,275 @@
+{
+  "common": {
+    "appName": "TaskFlux",
+    "nav": {
+      "home": "Inicio",
+      "tasks": "Tareas",
+      "about": "Acerca de",
+      "settings": "Ajustes"
+    },
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "close": "Cerrar",
+      "backToHome": "Volver al inicio",
+      "openTasks": "Abrir tareas",
+      "pleaseWait": "Espera…",
+      "signIn": "Iniciar sesión",
+      "signUp": "Registrarse",
+      "signOut": "Cerrar sesión",
+      "signingOut": "Cerrando sesión…"
+    },
+    "labels": {
+      "title": "Título",
+      "email": "Correo",
+      "password": "Contraseña",
+      "name": "Nombre",
+      "start": "Inicio",
+      "end": "Fin",
+      "status": "Estado",
+      "created": "Creada",
+      "updated": "Actualizada",
+      "schedule": "Horario",
+      "language": "Idioma"
+    },
+    "loading": "…",
+    "accountMenu": "Menú de cuenta",
+    "guestLanguage": "Idioma"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Iniciar sesión",
+      "description": "Bienvenido de nuevo. Introduce tus credenciales para continuar.",
+      "submit": "Iniciar sesión",
+      "alternate": "¿No tienes cuenta?",
+      "failed": "Error al iniciar sesión"
+    },
+    "signUp": {
+      "title": "Crear cuenta",
+      "description": "Empieza con TaskFlux en unos segundos.",
+      "submit": "Crear cuenta",
+      "alternate": "¿Ya tienes cuenta?",
+      "failed": "Error al registrarse"
+    }
+  },
+  "home": {
+    "eyebrow": "Gestión de tareas",
+    "title": "Tareas mínimas.",
+    "titleAccent": "Enfoque eléctrico.",
+    "description": "TaskFlux es una lista de tareas ligera con autenticación, pensada para ir rápido en Cloudflare y con shadcn/ui.",
+    "openTasks": "Abrir tareas",
+    "about": "Acerca de",
+    "builtForClarity": "Hecho para la claridad",
+    "builtForClarityDescription": "Todo lo que necesitas, nada de más.",
+    "features": {
+      "private": {
+        "title": "Solo tus tareas",
+        "description": "Cada tarea pertenece a tu cuenta. Privado por defecto."
+      },
+      "fast": {
+        "title": "Stack rápido en el edge",
+        "description": "TanStack Start en Cloudflare Workers con D1 en el edge."
+      },
+      "secure": {
+        "title": "Autenticación segura",
+        "description": "Correo y contraseña con Better Auth y cookies de sesión."
+      }
+    },
+    "cta": "Inicia sesión para sincronizar tareas entre dispositivos. ¿Eres nuevo?",
+    "createAccount": "Crea una cuenta"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Preferencias guardadas en tu cuenta.",
+    "languageRegion": {
+      "title": "Idioma y región",
+      "description": "Elige tu idioma preferido. Añadiremos más idiomas con el tiempo."
+    },
+    "time": {
+      "title": "Hora",
+      "description": "Cómo se muestran las horas en el calendario y las listas.",
+      "formatLabel": "Formato de hora"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "description": "Tema de la app en todos tus dispositivos cuando has iniciado sesión.",
+      "themeLabel": "Tema"
+    },
+    "save": "Guardar ajustes",
+    "saving": "Guardando…",
+    "toast": {
+      "successTitle": "Ajustes guardados",
+      "successDescription": "Tus preferencias se han actualizado.",
+      "errorTitle": "No se pudieron guardar los ajustes",
+      "errorDescription": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "options": {
+      "locale": {
+        "en": "English",
+        "es": "Español"
+      },
+      "timeFormat": {
+        "12h": "12 horas (AM / PM)",
+        "24h": "24 horas"
+      },
+      "theme": {
+        "light": "Claro",
+        "dark": "Oscuro",
+        "auto": "Sistema"
+      }
+    }
+  },
+  "tasks": {
+    "range": {
+      "both": "{{start}} → {{end}}",
+      "starts": "Empieza {{time}}",
+      "ends": "Termina {{time}}"
+    },
+    "schedule": {
+      "startPlaceholder": "Fecha y hora de inicio",
+      "endPlaceholder": "Fecha y hora de fin",
+      "none": "Sin horario — añade horas al editar."
+    },
+    "status": {
+      "completed": "Completada",
+      "inProgress": "En curso",
+      "markedComplete": "Marcada como completada",
+      "stillOpen": "Aún abierta"
+    },
+    "new": {
+      "title": "Nueva tarea",
+      "description": "Pon un título y, si quieres, horas de inicio y fin.",
+      "titlePlaceholder": "¿Qué necesitas hacer?",
+      "submit": "Añadir tarea"
+    },
+    "detail": {
+      "title": "Detalles de la tarea",
+      "description": "Ver o actualizar esta tarea."
+    },
+    "edit": {
+      "title": "Editar tarea",
+      "description": "Actualiza el título o el horario de esta tarea.",
+      "saveChanges": "Guardar cambios"
+    },
+    "unscheduledLabel": "Sin horario",
+    "toolbar": {
+      "addTask": "Añadir tarea",
+      "taskView": "Vista de tareas"
+    },
+    "viewMode": {
+      "daily": "Día",
+      "weekly": "Semana",
+      "monthly": "Mes"
+    },
+    "nav": {
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "previousWeek": "Semana anterior",
+      "nextWeek": "Semana siguiente",
+      "previousDay": "Día anterior",
+      "nextDay": "Día siguiente"
+    },
+    "unscheduled": {
+      "title": "Sin horario",
+      "subtitle": "Sin hora de inicio ni fin",
+      "empty": "No hay tareas sin horario.",
+      "count_zero": "Sin tareas",
+      "count_one": "1 tarea",
+      "count_other": "{{count}} tareas"
+    },
+    "aria": {
+      "markComplete": "Marcar como completada",
+      "markIncomplete": "Marcar como incompleta",
+      "editTask": "Editar tarea",
+      "deleteTask": "Eliminar tarea"
+    },
+    "contextMenu": {
+      "markCompleted": "Marcar como completada",
+      "markIncomplete": "Marcar como incompleta"
+    }
+  },
+  "calendar": {
+    "today": "Hoy"
+  },
+  "errors": {
+    "generic": "Algo salió mal",
+    "invalidDate": "Fecha no válida",
+    "endBeforeStart": "El fin debe ser igual o posterior al inicio"
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o puede haberse movido."
+  },
+  "footer": {
+    "stack": "TanStack Start · Cloudflare · Better Auth"
+  },
+  "about": {
+    "eyebrow": "Acerca de TaskFlux",
+    "heroTitle": "Un gestor de tareas que por fin",
+    "heroTitleAccent": "encaja con el trabajo.",
+    "heroDescription": "No es otra plataforma de productividad: una lista enfocada en la que puedes confiar, hecha por alguien que rebotaba entre herramientas demasiado pesadas o demasiado rígidas.",
+    "profileRole": "Ingeniero de software",
+    "badgeSource": "Código fuente",
+    "badgeSelfHost": "Autoalojable",
+    "badgeHosted": "Servicio alojado",
+    "viewRepository": "Ver repositorio",
+    "story1": "Siempre me ha costado la gestión de tareas. No porque no me importe hacer las cosas, sino porque la mayoría de apps no encajaban con cómo pienso y trabajo.",
+    "story2": "Algunas venían llenas de funciones que no usaría. Otras eran minimalistas hasta que necesitaba un poco más de control. Quería algo simple a simple vista y personalizable por debajo—así que construí TaskFlux para mí.",
+    "story3Before": "Lo uso cada día. El proyecto es",
+    "story3Link": "código abierto en GitHub",
+    "story3Middle": ", pero autoalojarlo significa ejecutarlo en",
+    "story3Emphasis": "tu propia cuenta de Cloudflare",
+    "story3After": "—Workers, D1 y tus datos bajo tu control. Usa el botón oficial Deploy to Cloudflare para hacer fork, aprovisionar recursos y publicar en pocos clics. La versión alojada es la misma app, mantenida para quien prefiere registrarse y empezar en segundos.",
+    "storyQuote": "Si has sentido la misma fricción con apps de tareas, TaskFlux es mi intento de ofrecer un punto de partida más tranquilo—y una base que puedas hacer tuya.",
+    "principlesTitle": "En qué optimicé",
+    "principlesDescription": "Las decisiones de producto detrás de TaskFlux, a propósito pequeñas.",
+    "stackTitle": "Por dentro",
+    "stackDescription": "Herramientas abiertas y conocidas, compuestas para velocidad y mantenimiento.",
+    "principles": {
+      "private": {
+        "title": "Privado por defecto",
+        "description": "Tus tareas son tuyas. Cada acción va ligada a tu cuenta: sin listas compartidas ni sorpresas."
+      },
+      "simple": {
+        "title": "Simple, no superficial",
+        "description": "Una interfaz limpia hoy, con margen para crecer. Estructura suficiente sin saturar de funciones."
+      },
+      "edge": {
+        "title": "Primero el edge",
+        "description": "En Cloudflare Workers y D1 para que vaya rápido donde lo abras."
+      }
+    },
+    "stack": {
+      "tanstack": {
+        "name": "TanStack Start",
+        "role": "Rutas, SSR y funciones de servidor"
+      },
+      "cloudflare": {
+        "name": "Cloudflare Workers",
+        "role": "Runtime global en el edge y despliegue"
+      },
+      "d1": {
+        "name": "D1 + Drizzle",
+        "role": "SQLite en el edge con consultas tipadas"
+      },
+      "auth": {
+        "name": "Better Auth",
+        "role": "Inicio de sesión por correo y sesiones"
+      },
+      "ui": {
+        "name": "shadcn/ui",
+        "role": "Componentes accesibles y Tailwind v4"
+      }
+    },
+    "ctaTitle": "Úsalo a tu manera",
+    "ctaDescription": "Prueba el servicio alojado, despliega tu instancia en Cloudflare o explora el código en GitHub.",
+    "openTasks": "Abrir tareas",
+    "signUp": "Registrarse",
+    "selfHostTitle": "Autoaloja en Cloudflare",
+    "selfHostDescription": "Despliegue en un clic en tu cuenta de Workers (D1 incluido).",
+    "sourceOnGithub": "Código en GitHub"
+  }
+}

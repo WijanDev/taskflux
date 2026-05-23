@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { CalendarNav } from '@/components/tasks/CalendarNav'
 import { TasksViewModeMenu } from '@/components/tasks/TasksViewModeMenu'
@@ -26,6 +27,8 @@ export function TasksCalendarToolbar({
   nextLabel,
   onAddTask,
 }: TasksCalendarToolbarProps) {
+  const { t } = useTranslation('tasks')
+
   return (
     <>
       {/* Mobile: stacked toolbar */}
@@ -35,7 +38,7 @@ export function TasksCalendarToolbar({
           <Button
             type="button"
             size="icon"
-            aria-label="Add task"
+            aria-label={t('toolbar.addTask')}
             onClick={onAddTask}
           >
             <Plus className="size-5" />
@@ -66,7 +69,7 @@ export function TasksCalendarToolbar({
         <Button
           type="button"
           size="icon"
-          aria-label="Add task"
+          aria-label={t('toolbar.addTask')}
           onClick={onAddTask}
         >
           <Plus className="size-5" />

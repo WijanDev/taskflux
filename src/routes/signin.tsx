@@ -1,4 +1,5 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import AuthForm from '#/components/AuthForm'
 import { authClient } from '#/lib/auth-client'
@@ -18,17 +19,18 @@ export const Route = createFileRoute('/signin')({
 })
 
 function SignInPage() {
+  const { t } = useTranslation('auth')
   const router = useRouter()
   const { redirect: redirectTo } = Route.useSearch()
 
   return (
     <AuthForm
       mode="signin"
-      title="Sign in"
-      description="Welcome back. Enter your credentials to continue."
-      submitLabel="Sign in"
+      title={t('signIn.title')}
+      description={t('signIn.description')}
+      submitLabel={t('signIn.submit')}
       alternate={{
-        label: "Don't have an account?",
+        label: t('signIn.alternate'),
         to: '/signup',
       }}
       onSubmit={async ({ email, password }) => {
@@ -37,7 +39,7 @@ function SignInPage() {
           password,
         })
         if (result.error) {
-          throw new Error(result.error.message ?? 'Sign in failed')
+          throw new Error(result.error.message ?? t('signIn.failed'))
         }
         await router.navigate({ to: redirectTo })
       }}

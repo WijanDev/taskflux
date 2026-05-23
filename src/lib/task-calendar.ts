@@ -130,22 +130,6 @@ export function formatWeekRange(weekStart: Date): string {
   return `${formatCalendarDate(start)} - ${formatCalendarDate(end)}`
 }
 
-export function formatMonthYear(year: number, month: number): string {
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(year, month, 1))
-}
-
-export function formatDayTitle(day: Date): string {
-  return new Intl.DateTimeFormat(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(day)
-}
-
 export function tasksForDay(tasks: Task[], day: Date): Task[] {
   return tasks.filter((task) => taskOverlapsDay(task, day))
 }
@@ -174,14 +158,6 @@ export const TIME_GRID_TIME_SLOTS = Array.from(
   { length: TIME_GRID_HOURS * 2 + 1 },
   (_, i) => i / 2,
 )
-
-export function formatTimelineLabel(hourFraction: number): string {
-  const totalMinutes = Math.round(hourFraction * 60)
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${pad(hours)}:${pad(minutes)}`
-}
 
 /** Task interval clipped to a single calendar day (local time). */
 export function getTaskIntervalOnDay(

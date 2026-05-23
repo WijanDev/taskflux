@@ -2,7 +2,9 @@ import { Pencil, Trash2 } from 'lucide-react'
 
 import { TaskScheduleFields } from '@/components/TaskScheduleFields'
 import type { Task } from '@/lib/task-calendar'
-import { formatTaskRange, toDatetimeLocalValue } from '@/lib/dates'
+import { toDatetimeLocalValue } from '@/lib/dates'
+import { useFormatters } from '@/providers/AppPreferencesProvider'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -32,6 +34,8 @@ type TaskListItemProps = {
 }
 
 export function TaskListItem({ task, actions, compact = false }: TaskListItemProps) {
+  const { t } = useTranslation(['tasks', 'common'])
+  const { formatTaskRange } = useFormatters()
   const {
     pending,
     editingId,
@@ -61,7 +65,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
       >
         <div className="flex w-full flex-col gap-4">
           <div className="grid gap-1.5">
-            <Label htmlFor={`edit-title-${task.id}`}>Title</Label>
+            <Label htmlFor={`edit-title-${task.id}`}>{t('common:labels.title')}</Label>
             <Input
               id={`edit-title-${task.id}`}
               type="text"
@@ -86,7 +90,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
               disabled={pending}
               onClick={() => onSaveEdit(task.id)}
             >
-              Save
+              {t('common:actions.save')}
             </Button>
             <Button
               type="button"
@@ -95,7 +99,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
               disabled={pending}
               onClick={onCancelEdit}
             >
-              Cancel
+              {t('common:actions.cancel')}
             </Button>
           </div>
         </div>
@@ -126,7 +130,11 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
           checked={task.completed}
           disabled={pending}
           onCheckedChange={(checked) => onToggle(task, checked === true)}
-          aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
+          aria-label={
+            task.completed
+              ? t('tasks:aria.markIncomplete')
+              : t('tasks:aria.markComplete')
+          }
         />
       </div>
 
@@ -157,7 +165,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
           className={compact ? 'size-8' : undefined}
           disabled={pending}
           onClick={() => onStartEdit(task)}
-          aria-label="Edit task"
+          aria-label={t('tasks:aria.editTask')}
         >
           <Pencil className={compact ? 'size-4' : 'size-3.5'} />
         </Button>
@@ -171,7 +179,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
           )}
           disabled={pending}
           onClick={() => onDelete(task.id)}
-          aria-label="Delete task"
+          aria-label={t('tasks:aria.deleteTask')}
         >
           <Trash2 className="size-3.5" />
         </Button>

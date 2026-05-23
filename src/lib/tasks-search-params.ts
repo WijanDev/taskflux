@@ -95,6 +95,18 @@ export function useTasksUrlState() {
     void setSearch({ date: formatCalendarDateParam(date) })
   }
 
+  function setCalendarAnchor(options: {
+    view?: TasksViewMode
+    date?: Date
+  }) {
+    void setSearch({
+      ...(options.view !== undefined ? { view: options.view } : {}),
+      ...(options.date !== undefined
+        ? { date: formatCalendarDateParam(options.date) }
+        : {}),
+    })
+  }
+
   function goToPreviousPeriod() {
     if (search.view === 'monthly') {
       const prev = addMonths(viewYear, viewMonth, -1)
@@ -134,6 +146,7 @@ export function useTasksUrlState() {
     selectedTaskId: search.task,
     setViewMode,
     setAnchorDate,
+    setCalendarAnchor,
     viewDay,
     viewWeekStart,
     viewYear,

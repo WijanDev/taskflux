@@ -3,23 +3,28 @@ import { Plus } from 'lucide-react'
 import { CalendarNav } from '@/components/tasks/CalendarNav'
 import { TasksViewModeMenu } from '@/components/tasks/TasksViewModeMenu'
 import { Button } from '@/components/ui/button'
+import type { CalendarNavDirection } from '@/hooks/use-calendar-period-navigation'
 import type { TasksViewMode } from '@/lib/task-calendar'
 
 type TasksCalendarToolbarProps = {
-  viewMode: TasksViewMode
-  onViewModeChange: (mode: TasksViewMode) => void
-  periodTitle: string
-  onPrevious: () => void
-  onNext: () => void
-  previousLabel: string
-  nextLabel: string
-  onAddTask: () => void
+  readonly viewMode: TasksViewMode
+  readonly onViewModeChange: (mode: TasksViewMode) => void
+  readonly periodTitle: string
+  readonly periodKey: string
+  readonly enterDirection?: CalendarNavDirection | null
+  readonly onPrevious: () => void
+  readonly onNext: () => void
+  readonly previousLabel: string
+  readonly nextLabel: string
+  readonly onAddTask: () => void
 }
 
 export function TasksCalendarToolbar({
   viewMode,
   onViewModeChange,
   periodTitle,
+  periodKey,
+  enterDirection = null,
   onPrevious,
   onNext,
   previousLabel,
@@ -43,6 +48,8 @@ export function TasksCalendarToolbar({
         </div>
         <CalendarNav
           title={periodTitle}
+          periodKey={periodKey}
+          enterDirection={enterDirection}
           onPrevious={onPrevious}
           onNext={onNext}
           previousLabel={previousLabel}
@@ -57,6 +64,8 @@ export function TasksCalendarToolbar({
         <div className="flex min-w-0 flex-1 justify-center">
           <CalendarNav
             title={periodTitle}
+            periodKey={periodKey}
+            enterDirection={enterDirection}
             onPrevious={onPrevious}
             onNext={onNext}
             previousLabel={previousLabel}

@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { Label } from '@/components/ui/label'
 
-type TaskScheduleFieldsProps = {
+type TaskScheduleFieldsProps = Readonly<{
   startValue: string
   endValue: string
   onStartChange: (value: string) => void
   onEndChange: (value: string) => void
   disabled?: boolean
   idPrefix: string
-}
+}>
 
 export function TaskScheduleFields({
   startValue,

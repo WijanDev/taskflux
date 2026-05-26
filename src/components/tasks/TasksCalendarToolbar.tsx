@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import type { CalendarNavDirection } from '@/hooks/use-calendar-period-navigation'
 import type { TasksViewMode } from '@/lib/task-calendar'
 
-type TasksCalendarToolbarProps = {
+type TasksCalendarToolbarProps = Readonly<{
   viewMode: TasksViewMode
   onViewModeChange: (mode: TasksViewMode) => void
   periodTitle: string
@@ -18,7 +18,7 @@ type TasksCalendarToolbarProps = {
   previousLabel: string
   nextLabel: string
   onAddTask: () => void
-}
+}>
 
 export function TasksCalendarToolbar({
   viewMode,

@@ -1,8 +1,6 @@
-import {
-  DEFAULT_USER_SETTINGS,
-  isAppLocale,
-  type AppLocale,
-} from '#/lib/user-settings'
+import type { AppLocale } from '#/lib/user-settings'
+import { DEFAULT_USER_SETTINGS, isAppLocale } from '#/lib/user-settings'
+import { isBrowser } from '@/lib/runtime'
 
 export const LOCALE_STORAGE_KEY = 'taskflux-locale'
 export const LOCALE_COOKIE_NAME = 'taskflux_locale'
@@ -20,18 +18,18 @@ export function readLocaleFromCookie(cookieHeader: string | null): AppLocale | n
 }
 
 export function persistLocale(locale: AppLocale) {
-  if (typeof window === 'undefined') {
+  if (!isBrowser()) {
     return
   }
-  window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+  globalThis.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
   document.cookie = `${LOCALE_COOKIE_NAME}=${locale};path=/;max-age=31536000;SameSite=Lax`
 }
 
 export function readGuestLocale(): AppLocale {
-  if (typeof window === 'undefined') {
+  if (!isBrowser()) {
     return DEFAULT_USER_SETTINGS.locale
   }
-  const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY)
+  const stored = globalThis.localStorage.getItem(LOCALE_STORAGE_KEY)
   if (stored && isAppLocale(stored)) {
     return stored
   }

@@ -1,4 +1,5 @@
-import { DayPicker, type DayPickerProps } from 'react-day-picker'
+import { DayPicker  } from 'react-day-picker'
+import type {DayPickerProps} from 'react-day-picker';
 
 import { cn } from '@/lib/utils'
 

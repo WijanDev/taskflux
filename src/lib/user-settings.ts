@@ -39,13 +39,13 @@ export function isUserThemeMode(value: string): value is UserThemeMode {
 
 export function parseUserSettingsUpdate(data: UserSettingsUpdate): UserSettingsUpdate {
   if (!isAppLocale(data.locale)) {
-    throw new Error('Invalid language')
+    throw new TypeError('Invalid language')
   }
   if (!isTimeFormat(data.timeFormat)) {
-    throw new Error('Invalid time format')
+    throw new TypeError('Invalid time format')
   }
   if (!isUserThemeMode(data.theme)) {
-    throw new Error('Invalid theme')
+    throw new TypeError('Invalid theme')
   }
   return data
 }

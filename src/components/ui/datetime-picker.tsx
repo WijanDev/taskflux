@@ -15,13 +15,13 @@ import {
 } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
-type DateTimePickerProps = {
+type DateTimePickerProps = Readonly<{
   id?: string
   value: string
   onChange: (value: string) => void
   disabled?: boolean
   placeholder?: string
-}
+}>
 
 function mergeDateAndTime(date: Date, timeSource: Date): Date {
   const merged = new Date(date)

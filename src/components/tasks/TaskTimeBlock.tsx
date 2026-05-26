@@ -2,12 +2,12 @@ import { TaskBlockContextMenu } from '@/components/tasks/TaskBlockContextMenu'
 import type { Task } from '@/lib/task-calendar'
 import { cn } from '@/lib/utils'
 
-type TaskTimeBlockProps = {
+type TaskTimeBlockProps = Readonly<{
   task: Task
   pending: boolean
   onSelect: (task: Task) => void
   onToggle: (task: Task, completed: boolean) => void
-}
+}>
 
 export function TaskTimeBlock({
   task,

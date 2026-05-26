@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import type { CalendarNavDirection } from '@/hooks/use-calendar-period-navigation'
 import { cn } from '@/lib/utils'
 
-type CalendarNavProps = {
+type CalendarNavProps = Readonly<{
   title: string
   periodKey: string
   enterDirection?: CalendarNavDirection | null
@@ -14,7 +14,7 @@ type CalendarNavProps = {
   previousLabel: string
   nextLabel: string
   className?: string
-}
+}>
 
 export function CalendarNav({
   title,

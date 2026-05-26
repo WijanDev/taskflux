@@ -1,4 +1,5 @@
-import { Plus } from 'lucide-react'
+import { Plus, X, Loader2 } from 'lucide-react'
+import type { SubmitEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TaskScheduleFields } from '@/components/TaskScheduleFields'
@@ -14,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type NewTaskDialogProps = {
+type NewTaskDialogProps = Readonly<{
   open: boolean
   onOpenChange: (open: boolean) => void
   title: string
@@ -25,8 +26,8 @@ type NewTaskDialogProps = {
   onTitleChange: (value: string) => void
   onStartChange: (value: string) => void
   onEndChange: (value: string) => void
-  onSubmit: (e: React.FormEvent) => void
-}
+  onSubmit: (e: SubmitEvent) => void
+}>
 
 export function NewTaskDialog({
   open,
@@ -88,14 +89,26 @@ export function NewTaskDialog({
             <Button
               type="button"
               variant="ghost"
+              size="icon"
               disabled={pending}
+              aria-label={t('common:actions.cancel')}
               onClick={() => onOpenChange(false)}
             >
-              {t('common:actions.cancel')}
+              <X className="size-4" aria-hidden />
             </Button>
-            <Button type="submit" disabled={pending || !title.trim()}>
-              <Plus className="size-4" />
-              {t('tasks:new.submit')}
+            <Button
+              type="submit"
+              size="icon"
+              disabled={pending || !title.trim()}
+              aria-label={
+                pending ? t('common:actions.pleaseWait') : t('tasks:new.submit')
+              }
+            >
+              {pending ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Plus className="size-4" aria-hidden />
+              )}
             </Button>
           </DialogFooter>
         </form>

@@ -24,6 +24,8 @@
 ## Verification
 
 - Run `bun run build` after non-trivial changes.
+- Run `bun run lint` when changing TypeScript/React code.
+- Follow [sonar.md](./sonar.md) for SonarLint rules (readonly props, no redundant `!`, deprecated APIs, a11y).
 - Run `bun run db:migrate` when adding migrations (local).
 - Do not add tests unless the user asks or they clearly add meaningful coverage.
 

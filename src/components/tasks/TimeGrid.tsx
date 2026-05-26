@@ -1,6 +1,7 @@
 import { TaskTimeBlock } from '@/components/tasks/TaskTimeBlock'
 import { WeekdayLabel } from '@/components/tasks/WeekdayLabel'
 import { useFormatters } from '@/providers/AppPreferencesProvider'
+import type { Task } from '@/lib/task-calendar'
 import {
   getTaskIntervalOnDay,
   getTimeGridStyle,
@@ -11,19 +12,18 @@ import {
   TIME_GRID_SCROLL_HEIGHT_PX,
   TIME_GRID_TIME_SLOTS,
   timeGridYFromHourFraction,
-  type Task,
 } from '@/lib/task-calendar'
 import { cn } from '@/lib/utils'
 
 const HALF_HOUR_INDICES = Array.from({ length: TIME_GRID_HOURS }, (_, i) => i)
 
-type TimeGridProps = {
+type TimeGridProps = Readonly<{
   days: Date[]
   tasks: Task[]
   pending: boolean
   onTaskSelect: (task: Task) => void
   onToggle: (task: Task, completed: boolean) => void
-}
+}>
 
 export function TimeGrid({
   days,
@@ -34,6 +34,10 @@ export function TimeGrid({
 }: TimeGridProps) {
   const { formatTimelineLabel } = useFormatters()
   const columnCount = days.length
+  if (columnCount === 0) {
+    return <div className="flex h-full min-h-0 flex-col overflow-hidden" />
+  }
+  const firstDay = days[0]
   const showWeekdayHeaders = columnCount > 1
   const isWeekView = columnCount > 1
   const gutterClass = 'w-11 shrink-0 sm:w-[4.25rem]'
@@ -82,10 +86,10 @@ export function TimeGrid({
           <div
             className={cn(
               'border-l border-border/60 px-2 py-2 text-center text-sm font-semibold sm:text-base',
-              isToday(days[0]!) && 'bg-primary/5 text-primary',
+              isToday(firstDay) && 'bg-primary/5 text-primary',
             )}
           >
-            {days[0]!.toLocaleDateString(undefined, {
+            {firstDay.toLocaleDateString(undefined, {
               weekday: 'long',
               month: 'short',
               day: 'numeric',

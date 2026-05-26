@@ -4,9 +4,10 @@ import { eq } from 'drizzle-orm'
 import { userSettings } from '#/db/schema'
 import {
   DEFAULT_USER_SETTINGS,
-  parseUserSettingsUpdate,
-  type UserSettingsUpdate,
+  parseUserSettingsUpdate
+  
 } from '#/lib/user-settings'
+import type {UserSettingsUpdate} from '#/lib/user-settings';
 
 import { requireUserId } from '#/server/auth'
 

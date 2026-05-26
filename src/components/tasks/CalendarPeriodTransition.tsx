@@ -3,12 +3,12 @@ import type { ReactNode } from 'react'
 import type { CalendarNavDirection } from '@/hooks/use-calendar-period-navigation'
 import { cn } from '@/lib/utils'
 
-type CalendarPeriodTransitionProps = {
-  readonly periodKey: string
-  readonly enterDirection: CalendarNavDirection | null
-  readonly children: ReactNode
-  readonly className?: string
-}
+type CalendarPeriodTransitionProps = Readonly<{
+  periodKey: string
+  enterDirection: CalendarNavDirection | null
+  children: ReactNode
+  className?: string
+}>
 
 export function calendarPeriodEnterClass(
   enterDirection: CalendarNavDirection | null,

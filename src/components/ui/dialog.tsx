@@ -1,14 +1,15 @@
 import { X } from 'lucide-react'
-import { useEffect, useRef, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-type DialogProps = {
+type DialogProps = Readonly<{
   open: boolean
   onOpenChange: (open: boolean) => void
   children: ReactNode
-}
+}>
 
 function Dialog({ open, onOpenChange, children }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -17,12 +18,12 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
     const dialog = ref.current
     if (!dialog) return
 
-    if (open && !dialog.open) {
+    if (!open && dialog.open) {
+      dialog.close()
+    } else if (open && !dialog.open) {
       // Use show() so portaled popovers (date picker) can stack above via z-index.
       // showModal() renders in the browser top layer, which sits above all portals.
       dialog.show()
-    } else if (!open && dialog.open) {
-      dialog.close()
     }
   }, [open])
 
@@ -51,11 +52,11 @@ function DialogContent({
   className,
   children,
   onClose,
-}: {
+}: Readonly<{
   className?: string
   children: ReactNode
   onClose?: () => void
-}) {
+}>) {
   return (
     <div className={cn('relative flex w-full min-w-0 flex-col', className)}>
       {onClose ? (
@@ -90,12 +91,20 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function DialogTitle({ className, ...props }: React.ComponentProps<'h2'>) {
+type DialogTitleProps = Readonly<
+  Omit<React.ComponentProps<'h2'>, 'children'> & {
+    children: ReactNode
+  }
+>
+
+function DialogTitle({ className, children, ...props }: DialogTitleProps) {
   return (
     <h2
       className={cn('text-lg leading-tight font-semibold tracking-tight', className)}
       {...props}
-    />
+    >
+      {children}
+    </h2>
   )
 }
 

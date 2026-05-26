@@ -1,10 +1,6 @@
 import type { TFunction } from 'i18next'
 
-import {
-  addDays,
-  formatCalendarDate,
-  startOfWeekMonday,
-} from '@/lib/task-calendar'
+import { addDays, formatWeekRange } from '@/lib/task-calendar'
 import type { AppLocale, TimeFormat } from '#/lib/user-settings'
 
 const MONDAY_BASE = new Date(2024, 0, 1)
@@ -70,12 +66,6 @@ export function createFormatters(
     }).format(day)
   }
 
-  function formatWeekRange(weekStart: Date): string {
-    const start = startOfWeekMonday(weekStart)
-    const end = addDays(start, 6)
-    return `${formatCalendarDate(start)} - ${formatCalendarDate(end)}`
-  }
-
   function formatTimelineLabel(hourFraction: number): string {
     const totalMinutes = Math.round(hourFraction * 60)
     const hours = Math.floor(totalMinutes / 60)
@@ -118,7 +108,10 @@ export function createFormatters(
     if (start) {
       return timeOnlyFormatter.format(start)
     }
-    return timeOnlyFormatter.format(end!)
+    if (end) {
+      return timeOnlyFormatter.format(end)
+    }
+    return null
   }
 
   return {

@@ -9,13 +9,13 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-type TaskDialogHeaderProps = {
+type TaskDialogHeaderProps = Readonly<{
   icon: LucideIcon
   title: string
   description?: string
   badge?: ReactNode
   titleClassName?: string
-}
+}>
 
 export function TaskDialogHeader({
   icon: Icon,
@@ -49,12 +49,12 @@ export function TaskDialogHeader({
   )
 }
 
-type TaskMetaItemProps = {
+type TaskMetaItemProps = Readonly<{
   icon: LucideIcon
   label: string
   value: ReactNode
   className?: string
-}
+}>
 
 export function TaskMetaItem({
   icon: Icon,
@@ -80,7 +80,11 @@ export function TaskMetaItem({
   )
 }
 
-export function TaskStatusBadge({ completed }: { completed: boolean }) {
+type TaskStatusBadgeProps = Readonly<{
+  completed: boolean
+}>
+
+export function TaskStatusBadge({ completed }: TaskStatusBadgeProps) {
   const { t } = useTranslation('tasks')
 
   return (

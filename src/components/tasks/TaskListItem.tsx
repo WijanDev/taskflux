@@ -1,8 +1,8 @@
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, Save, X, Loader2 } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import { TaskScheduleFields } from '@/components/TaskScheduleFields'
 import type { Task } from '@/lib/task-calendar'
-import { toDatetimeLocalValue } from '@/lib/dates'
 import { useFormatters } from '@/providers/AppPreferencesProvider'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -27,11 +27,11 @@ export type TaskListActions = {
   onEditEndChange: (value: string) => void
 }
 
-type TaskListItemProps = {
+type TaskListItemProps = Readonly<{
   task: Task
   actions: TaskListActions
   compact?: boolean
-}
+}>
 
 export function TaskListItem({ task, actions, compact = false }: TaskListItemProps) {
   const { t } = useTranslation(['tasks', 'common'])
@@ -54,6 +54,15 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
 
   const rangeLabel = formatTaskRange(task.taskStartAt, task.taskEndsAt)
   const isEditing = editingId === task.id
+
+  let scheduleHint: ReactNode = null
+  if (!compact && rangeLabel) {
+    scheduleHint = (
+      <span className="mt-1 block text-xs text-muted-foreground">
+        {rangeLabel}
+      </span>
+    )
+  }
 
   if (isEditing) {
     return (
@@ -86,20 +95,28 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
-              size="sm"
+              size="icon"
               disabled={pending}
+              aria-label={
+                pending ? t('common:actions.pleaseWait') : t('common:actions.save')
+              }
               onClick={() => onSaveEdit(task.id)}
             >
-              {t('common:actions.save')}
+              {pending ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Save className="size-4" aria-hidden />
+              )}
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon"
               disabled={pending}
+              aria-label={t('common:actions.cancel')}
               onClick={onCancelEdit}
             >
-              {t('common:actions.cancel')}
+              <X className="size-4" aria-hidden />
             </Button>
           </div>
         </div>
@@ -150,11 +167,7 @@ export function TaskListItem({ task, actions, compact = false }: TaskListItemPro
         >
           {task.title}
         </span>
-        {rangeLabel && !compact ? (
-          <span className="mt-1 block text-xs text-muted-foreground">
-            {rangeLabel}
-          </span>
-        ) : null}
+        {scheduleHint}
       </div>
 
       <div className={cn('flex shrink-0 gap-0.5', compact ? '' : 'justify-end')}>

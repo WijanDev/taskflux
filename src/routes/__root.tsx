@@ -1,4 +1,11 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from '@tanstack/react-router'
+import type { RouterContext } from '@/router'
+import type { ReactNode } from 'react'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
@@ -10,13 +17,12 @@ import Header from '../components/Header'
 
 import { getAppPreferences } from '#/server/app-preferences'
 
+import { LOCALE_INIT_SCRIPT } from '@/lib/locale-init-script'
+import { THEME_INIT_SCRIPT } from '@/lib/theme-init-script'
+
 import appCss from '../styles.css?url'
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
-
-const LOCALE_INIT_SCRIPT = `(function(){try{var match=document.cookie.match(/taskflux_locale=([^;]+)/);var fromCookie=match&&match[1];var stored=window.localStorage.getItem('taskflux-locale');var locale=(stored==='en'||stored==='es')?stored:(fromCookie==='en'||fromCookie==='es'?fromCookie:'en');document.documentElement.lang=locale}catch(e){}})();`
-
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   loader: () => getAppPreferences(),
   notFoundComponent: NotFound,
   head: () => ({
@@ -65,7 +71,11 @@ function RootLayout() {
   )
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+type RootDocumentProps = Readonly<{
+  children: ReactNode
+}>
+
+function RootDocument({ children }: RootDocumentProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

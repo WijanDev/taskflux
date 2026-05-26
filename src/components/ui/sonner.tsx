@@ -6,7 +6,8 @@ import {
   TriangleAlertIcon,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Toaster as Sonner, type ToasterProps } from 'sonner'
+import { Toaster as Sonner  } from 'sonner'
+import type {ToasterProps} from 'sonner';
 
 function useResolvedSonnerTheme(): NonNullable<ToasterProps['theme']> {
   const [theme, setTheme] = useState<NonNullable<ToasterProps['theme']>>('light')

@@ -7,10 +7,12 @@ This folder contains **project-specific instructions for AI coding agents**. Rea
 | When you work on… | Read |
 |-------------------|------|
 | Any change | [overview.md](./overview.md), [workflow.md](./workflow.md), [tooling.md](./tooling.md) |
+| TypeScript/React quality (SonarLint) | [sonar.md](./sonar.md) |
 | UI, styling, forms, dialogs | [ui-components.md](./ui-components.md) |
 | D1, Drizzle, migrations | [database.md](./database.md) |
 | Routes, loaders, server functions | [server-and-routes.md](./server-and-routes.md) |
 | Sign-in, sessions, per-user data | [auth.md](./auth.md) |
+| User roles (guest, paid, invited, admin) | [bussiness/roles.md](./bussiness/roles.md) |
 | Tasks calendar, URL state, settings | [tasks-and-settings.md](./tasks-and-settings.md) |
 
 ## Keeping this up to date

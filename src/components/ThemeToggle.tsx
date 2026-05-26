@@ -2,11 +2,27 @@ import { Computer, Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import type { ThemeMode } from '@/lib/theme'
 import {
   applyThemeMode,
   getInitialMode,
-  type ThemeMode,
+  getNextThemeMode,
+  getThemeToggleLabel,
 } from '@/lib/theme'
+
+type ThemeModeIconProps = Readonly<{
+  mode: ThemeMode
+}>
+
+function ThemeModeIcon({ mode }: ThemeModeIconProps) {
+  if (mode === 'dark') {
+    return <Moon className="size-4" aria-hidden />
+  }
+  if (mode === 'auto') {
+    return <Computer className="size-4" aria-hidden />
+  }
+  return <Sun className="size-4" aria-hidden />
+}
 
 export default function ThemeToggle() {
   const [mode, setMode] = useState<ThemeMode>('auto')
@@ -22,7 +38,7 @@ export default function ThemeToggle() {
       return
     }
 
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const media = globalThis.matchMedia('(prefers-color-scheme: dark)')
     const onChange = () => applyThemeMode('auto', { animate: true })
 
     media.addEventListener('change', onChange)
@@ -32,19 +48,13 @@ export default function ThemeToggle() {
   }, [mode])
 
   function toggleMode() {
-    const nextMode: ThemeMode =
-      mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
+    const nextMode = getNextThemeMode(mode)
     setMode(nextMode)
     applyThemeMode(nextMode, { animate: true })
-    window.localStorage.setItem('theme', nextMode)
+    globalThis.localStorage.setItem('theme', nextMode)
   }
 
-  const label =
-    mode === 'auto'
-      ? 'Theme: system. Click for light.'
-      : mode === 'dark'
-        ? 'Theme: dark. Click for auto.'
-        : 'Theme: light. Click for dark.'
+  const label = getThemeToggleLabel(mode)
 
   return (
     <Button
@@ -55,13 +65,7 @@ export default function ThemeToggle() {
       aria-label={label}
       title={label}
     >
-      {mode === 'dark' ? (
-        <Moon className="size-4" aria-hidden />
-      ) : mode === 'auto' ? (
-        <Computer className="size-4" aria-hidden />
-      ) : (
-        <Sun className="size-4" aria-hidden />
-      )}
+      <ThemeModeIcon mode={mode} />
     </Button>
   )
 }

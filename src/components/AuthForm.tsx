@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import type { SubmitEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type AuthFormProps = {
+type AuthFormProps = Readonly<{
   mode: 'signin' | 'signup'
   title: string
   description: string
@@ -26,7 +27,7 @@ type AuthFormProps = {
     email: string
     password: string
   }) => Promise<void>
-}
+}>
 
 export default function AuthForm({
   mode,
@@ -43,7 +44,7 @@ export default function AuthForm({
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault()
     setPending(true)
     setError(null)

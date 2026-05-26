@@ -17,6 +17,10 @@
 
 3. Configure in `components.json` (style: `new-york`, aliases: `@/components`, `@/lib/utils`).
 
+### Sonar / props
+
+- Component props types should use `Readonly<{ ... }>` — see [sonar.md](./sonar.md) (`typescript:S6759`).
+
 ### Styling
 
 - **Tailwind v4** in `src/styles.css` (`@import "tailwindcss"`, `@theme inline`, CSS variables for light/dark).

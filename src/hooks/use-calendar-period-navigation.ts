@@ -78,11 +78,11 @@ export function useCalendarPeriodNavigation({
     if (!direction) return
 
     setEnterDirection(direction)
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = globalThis.setTimeout(() => {
       setEnterDirection(null)
     }, CALENDAR_PERIOD_TRANSITION_MS)
 
-    return () => window.clearTimeout(timeoutId)
+    return () => globalThis.clearTimeout(timeoutId)
   }, [periodKey])
 
   const queueDirection = useCallback((direction: CalendarNavDirection | null) => {

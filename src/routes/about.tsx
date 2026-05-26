@@ -1,17 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import {
-  ArrowRight,
-  Cloud,
-  Database,
-  Github,
-  Layers,
-  Lock,
-  Sparkles,
-} from 'lucide-react'
+import { ArrowRight, Cloud, Database, Layers, Lock, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { DeployToCloudflareLink } from '@/components/DeployToCloudflareLink'
+import { GithubIcon } from '@/components/icons/GithubIcon'
 import { PageShell } from '@/components/PageShell'
 import { Button } from '@/components/ui/button'
 import { GITHUB_REPO } from '@/lib/site'
@@ -38,15 +31,13 @@ const stackMeta = [
   { key: 'ui', icon: Sparkles },
 ] as const
 
-function AboutBadge({
-  children,
-  className,
-  href,
-}: {
+type AboutBadgeProps = Readonly<{
   children: ReactNode
   className?: string
   href?: string
-}) {
+}>
+
+function AboutBadge({ children, className, href }: AboutBadgeProps) {
   const classes = cn(
     'inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary',
     href && 'no-underline transition-colors hover:bg-primary/20',
@@ -103,7 +94,7 @@ function About() {
                   </p>
                   <div className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
                     <AboutBadge href={GITHUB_REPO}>
-                      <Github className="mr-1.5 size-3" />
+                      <GithubIcon className="mr-1.5 size-3" />
                       {t('badgeSource')}
                     </AboutBadge>
                     <AboutBadge>
@@ -120,7 +111,7 @@ function About() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Github className="size-4" />
+                        <GithubIcon className="size-4" />
                         {t('viewRepository')}
                       </a>
                     </Button>
@@ -253,7 +244,7 @@ function About() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Github className="size-4" />
+                      <GithubIcon className="size-4" />
                       {t('sourceOnGithub')}
                     </a>
                   </Button>

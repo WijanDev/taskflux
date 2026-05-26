@@ -17,3 +17,4 @@ export const tasks = sqliteTable('tasks', {
 
 export * from './auth-schema'
 export * from './user-settings-schema'
+export * from './user-roles-schema'

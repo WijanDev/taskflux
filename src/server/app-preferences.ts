@@ -4,9 +4,10 @@ import { getRequestHeaders } from '@tanstack/react-start/server'
 import { readLocaleFromCookie } from '@/lib/i18n/cookies'
 import {
   DEFAULT_USER_SETTINGS,
-  toUserSettingsUpdate,
-  type UserSettingsUpdate,
+  toUserSettingsUpdate
+  
 } from '#/lib/user-settings'
+import type {UserSettingsUpdate} from '#/lib/user-settings';
 
 import { getUserSettings } from '#/server/user-settings'
 

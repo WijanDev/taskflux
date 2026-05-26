@@ -15,9 +15,10 @@ export const I18N_NAMESPACES = [
   'notFound',
   'footer',
   'about',
+  'admin',
 ] as const
 
-void i18n.use(initReactI18next).init({
+await i18n.use(initReactI18next).init({
   resources: { en, es },
   lng: 'en',
   fallbackLng: 'en',

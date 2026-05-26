@@ -5,7 +5,11 @@
       "home": "Home",
       "tasks": "Tasks",
       "about": "About",
-      "settings": "Settings"
+      "settings": "Settings",
+      "userRoles": "Users",
+      "users": "Users",
+      "menu": "Menu",
+      "theme": "Theme"
     },
     "actions": {
       "save": "Save",
@@ -104,6 +108,17 @@
       "successDescription": "Your preferences have been updated.",
       "errorTitle": "Could not save settings",
       "errorDescription": "Something went wrong. Try again."
+    },
+    "dev": {
+      "title": "Development",
+      "description": "Tools for local and staging environments only.",
+      "hint": "Deletes every user except you, then creates 100 test users with realistic Spanish (80%) or English names, emails like name_surname@taskflux.test, roles guest/paid/invited, and 5–10 tasks each. Password: Test1234!",
+      "reseedButton": "Reseed database",
+      "reseedConfirm": "This permanently deletes all users except your account and creates 100 seed users with tasks. Continue?",
+      "reseedSuccessTitle": "Database reseeded",
+      "reseedSuccessDescription": "Created {{users}} users and {{tasks}} tasks. Sign in as {{email}} with password {{password}}.",
+      "reseedErrorTitle": "Reseed failed",
+      "reseedErrorDescription": "Something went wrong. Try again."
     },
     "options": {
       "locale": {
@@ -274,5 +289,78 @@
     "selfHostTitle": "Self-host on Cloudflare",
     "selfHostDescription": "One-click deploy to your Workers account (D1 included).",
     "sourceOnGithub": "Source on GitHub"
+  },
+  "admin": {
+    "title": "Users",
+    "description": "Browse accounts, open a user to manage their role, and review role history.",
+    "userDetail": {
+      "loading": "Loading user…",
+      "loadFailed": "Could not load this user. Try again or go back to the list.",
+      "backToUsers": "Back to users",
+      "profileTitle": "Profile",
+      "profileDescription": "Account details for this user.",
+      "emailVerified": "Email verified",
+      "yes": "Yes",
+      "no": "No",
+      "accountUpdated": "Account updated",
+      "userId": "User ID",
+      "tasksTitle": "Tasks",
+      "tasksDescription": "Task count only — task contents are not visible to admins.",
+      "taskCountLabel_one": "{{count}} task",
+      "taskCountLabel_other": "{{count}} tasks",
+      "roleTitle": "Role",
+      "roleDescription": "Assign a role for this user. Changes are recorded in role history.",
+      "saveRole": "Save role",
+      "historyTitle": "Role history",
+      "historyDescription": "Recent role changes for this account."
+    },
+    "users": {
+      "title": "All users",
+      "description": "Only admins can access this page. Role changes are audited in user_role_history.",
+      "listDescription": "Select a user to view details and update their role.",
+      "viewUser": "View user",
+      "openUser": "Open {{name}}",
+      "empty": "No users found.",
+      "roleLabel": "Role",
+      "joined": "Joined {{date}}",
+      "roleUpdated": "Role updated {{date}}",
+      "roleNeverSet": "role not assigned yet (defaults to guest)",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "joined": "Joined",
+        "roleUpdated": "Role updated",
+        "actions": "Actions"
+      },
+      "saveRoleFor": "Save role for {{name}}",
+      "savingRole": "Saving role",
+      "searchLabel": "Search users",
+      "searchPlaceholder": "Search by name or email…",
+      "filterRole": "Role",
+      "filterRoleAll": "All roles",
+      "resultsCount": "Showing {{shown}} of {{total}} users",
+      "resultsRange": "Showing {{from}}–{{to}} of {{total}} users",
+      "loading": "Loading users…",
+      "loadingPage": "Loading page…",
+      "loadFailed": "Could not load users.",
+      "noResults": "No users match your search or filters.",
+      "pageSize": "Rows per page",
+      "pageOf": "Page {{page}} of {{totalPages}}",
+      "firstPage": "First",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "lastPage": "Last"
+    },
+    "roles": {
+      "guest": "Guest",
+      "paid": "Paid",
+      "invited": "Invited",
+      "admin": "Admin"
+    },
+    "toast": {
+      "roleUpdated": "Role updated",
+      "roleUpdateFailed": "Could not update role",
+      "lastAdmin": "Cannot remove the last admin"
+    }
   }
 }

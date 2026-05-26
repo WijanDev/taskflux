@@ -3,7 +3,7 @@ import type { Task } from '@/lib/task-calendar'
 import { useFormatters } from '@/providers/AppPreferencesProvider'
 import { cn } from '@/lib/utils'
 
-type TaskCalendarItemProps = {
+type TaskCalendarItemProps = Readonly<{
   task: Task
   pending: boolean
   onSelect: (task: Task) => void
@@ -11,7 +11,7 @@ type TaskCalendarItemProps = {
   className?: string
   scheduleTimeClassName?: string
   titleClassName?: string
-}
+}>
 
 export function TaskCalendarItem({
   task,

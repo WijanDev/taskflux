@@ -1,13 +1,15 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
-import { Settings } from 'lucide-react'
+import { Settings, Save, Loader2 } from 'lucide-react'
 
+import type { SubmitEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 
 import { PageShell } from '@/components/PageShell'
+import { DbReseedCard } from '@/components/settings/DbReseedCard'
 
 import { Button } from '@/components/ui/button'
 
@@ -29,12 +31,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import type { UserSettingsUpdate } from '#/lib/user-settings'
 import {
   SUPPORTED_LOCALES,
   TIME_FORMATS,
   USER_THEME_MODES,
+  isAppLocale,
+  isTimeFormat,
+  isUserThemeMode,
   toUserSettingsUpdate,
-  type UserSettingsUpdate,
 } from '#/lib/user-settings'
 
 import {
@@ -42,7 +47,6 @@ import {
   PAGE_TRANSITION_MS,
   SETTINGS_SAVE_TOAST_MS,
   waitMs,
-  type SettingsSaveNavigationState,
 } from '@/lib/page-transition'
 import { applyThemeMode } from '@/lib/theme'
 import { cn } from '@/lib/utils'
@@ -81,18 +85,22 @@ function SettingsPage() {
 
   useEffect(() => {
     applyThemeMode(initial.theme)
-    window.localStorage.setItem('theme', initial.theme)
+    globalThis.localStorage.setItem('theme', initial.theme)
   }, [initial.theme])
 
-  function updateField<K extends keyof UserSettingsUpdate>(
-    key: K,
-    value: UserSettingsUpdate[K],
+  function updateField<TKey extends keyof UserSettingsUpdate>(
+    key: TKey,
+    value: UserSettingsUpdate[TKey],
   ) {
     setForm((prev) => ({ ...prev, [key]: value }))
 
     if (key === 'theme') {
-      applyThemeMode(value, { animate: true })
-      window.localStorage.setItem('theme', value)
+      const themeValue = String(value)
+      if (!isUserThemeMode(themeValue)) {
+        return
+      }
+      applyThemeMode(themeValue, { animate: true })
+      globalThis.localStorage.setItem('theme', themeValue)
     }
 
     if (key === 'locale' || key === 'timeFormat') {
@@ -100,7 +108,7 @@ function SettingsPage() {
     }
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault()
     setPending(true)
 
@@ -115,7 +123,7 @@ function SettingsPage() {
       await waitMs(PAGE_TRANSITION_MS)
       await router.navigate({
         to: '/tasks',
-        state: { fromSettingsSave: true } satisfies SettingsSaveNavigationState,
+        state: { fromSettingsSave: true },
       })
     } catch (err) {
       toast.error(t('toast.errorTitle'), {
@@ -127,8 +135,8 @@ function SettingsPage() {
   }
 
   return (
-    <PageShell narrow className={cn(isExiting && PAGE_EXIT_CLASS)}>
-      <div className="mb-8 flex items-center gap-3">
+    <PageShell comfortable className={cn(isExiting && PAGE_EXIT_CLASS)}>
+      <div className="mb-8 flex items-center gap-3 md:mb-10">
         <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <Settings className="size-5" aria-hidden />
         </span>
@@ -139,20 +147,23 @@ function SettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('languageRegion.title')}</CardTitle>
-            <CardDescription>{t('languageRegion.description')}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="settings-locale">{t('common:labels.language')}</Label>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>{t('languageRegion.title')}</CardTitle>
+              <CardDescription>{t('languageRegion.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="settings-locale">{t('common:labels.language')}</Label>
               <Select
                 value={form.locale}
                 disabled={pending}
-                onValueChange={(value) =>
-                  updateField('locale', value as UserSettingsUpdate['locale'])
-                }
+                onValueChange={(value) => {
+                  if (isAppLocale(value)) {
+                    updateField('locale', value)
+                  }
+                }}
               >
                 <SelectTrigger id="settings-locale" className="w-full">
                   <SelectValue />
@@ -169,7 +180,7 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader>
             <CardTitle>{t('time.title')}</CardTitle>
             <CardDescription>{t('time.description')}</CardDescription>
@@ -180,12 +191,11 @@ function SettingsPage() {
               <Select
                 value={form.timeFormat}
                 disabled={pending}
-                onValueChange={(value) =>
-                  updateField(
-                    'timeFormat',
-                    value as UserSettingsUpdate['timeFormat'],
-                  )
-                }
+                onValueChange={(value) => {
+                  if (isTimeFormat(value)) {
+                    updateField('timeFormat', value)
+                  }
+                }}
               >
                 <SelectTrigger id="settings-time-format" className="w-full">
                   <SelectValue />
@@ -202,7 +212,7 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full md:col-span-2 xl:col-span-1">
           <CardHeader>
             <CardTitle>{t('appearance.title')}</CardTitle>
             <CardDescription>{t('appearance.description')}</CardDescription>
@@ -213,9 +223,11 @@ function SettingsPage() {
               <Select
                 value={form.theme}
                 disabled={pending}
-                onValueChange={(value) =>
-                  updateField('theme', value as UserSettingsUpdate['theme'])
-                }
+                onValueChange={(value) => {
+                  if (isUserThemeMode(value)) {
+                    updateField('theme', value)
+                  }
+                }}
               >
                 <SelectTrigger id="settings-theme" className="w-full">
                   <SelectValue />
@@ -231,10 +243,22 @@ function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={pending}>
-            {pending ? t('saving') : t('save')}
+        <DbReseedCard disabled={pending || isExiting} />
+
+        <div className="flex justify-end border-t border-border pt-2 md:pt-4">
+          <Button
+            type="submit"
+            size="icon"
+            disabled={pending}
+            aria-label={pending ? t('saving') : t('save')}
+          >
+            {pending ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <Save className="size-4" aria-hidden />
+            )}
           </Button>
         </div>
       </form>

@@ -30,3 +30,11 @@ Use in `beforeLoad` for guards; return `session` from `beforeLoad` when needed i
 
 - Shows user name + Sign out when `session?.user` exists.
 - Settings link only when authenticated (`/settings`).
+
+## Roles
+
+Signed-in users have an application role (`guest`, `paid`, `invited`, `admin`). See [bussiness/roles.md](./bussiness/roles.md).
+
+- `requireAdmin()` in `src/server/auth.ts` for admin-only server functions.
+- Default effective role without a `user_role` row: `guest`.
+- Admin UI: `/admin/roles` (server: `src/server/user-roles.ts`).

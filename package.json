@@ -13,7 +13,9 @@
   },
   "type": "module",
   "imports": {
-    "#/*": "./src/*"
+    "#/*": "./src/*",
+    "#/lib/admin-users-query": "./src/lib/admin-users-query.ts",
+    "#/server/admin-users-query": "./src/server/admin-users-query.ts"
   },
   "scripts": {
     "predev": "bun run db:migrate",
@@ -39,6 +41,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
+    "@tanstack/react-query": "^5.100.14",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/react-router-ssr-query": "latest",

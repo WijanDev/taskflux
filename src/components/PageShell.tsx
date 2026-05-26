@@ -3,20 +3,22 @@ import type { ReactNode } from 'react'
 import { Container } from '@/components/Container'
 import { cn } from '@/lib/utils'
 
-type PageShellProps = {
+type PageShellProps = Readonly<{
   children: ReactNode
   className?: string
   narrow?: boolean
+  comfortable?: boolean
   wide?: boolean
   full?: boolean
   /** Near viewport width (e.g. tasks calendar) */
   fluid?: boolean
-}
+}>
 
 export function PageShell({
   children,
   className,
   narrow = false,
+  comfortable = false,
   wide = false,
   full = false,
   fluid = false,
@@ -32,6 +34,7 @@ export function PageShell({
     >
       <Container
         narrow={narrow}
+        comfortable={comfortable}
         wide={wide}
         full={full}
         fluid={fluid}

@@ -11,6 +11,21 @@ export type SettingsSaveNavigationState = {
   fromSettingsSave?: boolean
 }
 
+declare module '@tanstack/react-router' {
+  interface HistoryState extends SettingsSaveNavigationState {}
+}
+
+export function isSettingsSaveNavigationState(
+  state: unknown,
+): state is SettingsSaveNavigationState {
+  return (
+    typeof state === 'object' &&
+    state !== null &&
+    'fromSettingsSave' in state &&
+    state.fromSettingsSave === true
+  )
+}
+
 export function waitMs(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms))
 }

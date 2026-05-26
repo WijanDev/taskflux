@@ -1,9 +1,9 @@
 import { useFormatters } from '@/providers/AppPreferencesProvider'
 
-type WeekdayLabelProps = {
+type WeekdayLabelProps = Readonly<{
   index: number
   className?: string
-}
+}>
 
 export function WeekdayLabel({ index, className }: WeekdayLabelProps) {
   const { formatWeekday } = useFormatters()

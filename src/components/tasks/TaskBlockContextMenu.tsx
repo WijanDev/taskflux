@@ -10,12 +10,12 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 
-type TaskBlockContextMenuProps = {
+type TaskBlockContextMenuProps = Readonly<{
   task: Task
   pending: boolean
   onToggle: (task: Task, completed: boolean) => void
   children: ReactNode
-}
+}>
 
 export function TaskBlockContextMenu({
   task,

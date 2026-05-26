@@ -2,12 +2,12 @@
 export function parseOptionalTimestamp(
   value: string | null | undefined,
 ): Date | null {
-  if (value == null || value.trim() === '') {
+  if (!value?.trim()) {
     return null
   }
   const ms = Date.parse(value)
   if (Number.isNaN(ms)) {
-    throw new Error('Invalid date')
+    throw new TypeError('Invalid date')
   }
   return new Date(ms)
 }
@@ -34,7 +34,7 @@ export function toDatetimeLocalValue(date: Date | null | undefined): string {
 export function parseDatetimeLocalValue(
   value: string | null | undefined,
 ): Date | undefined {
-  if (value == null || value.trim() === '') {
+  if (!value?.trim()) {
     return undefined
   }
   const ms = Date.parse(value)

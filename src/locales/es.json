@@ -5,7 +5,11 @@
       "home": "Inicio",
       "tasks": "Tareas",
       "about": "Acerca de",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "userRoles": "Usuarios",
+      "users": "Usuarios",
+      "menu": "Menú",
+      "theme": "Tema"
     },
     "actions": {
       "save": "Guardar",
@@ -104,6 +108,17 @@
       "successDescription": "Tus preferencias se han actualizado.",
       "errorTitle": "No se pudieron guardar los ajustes",
       "errorDescription": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "dev": {
+      "title": "Desarrollo",
+      "description": "Herramientas solo para entornos local y staging.",
+      "hint": "Elimina todos los usuarios excepto tú y crea 100 usuarios con nombres realistas en español (80%) o inglés, correos tipo nombre_apellido@taskflux.test, roles guest/paid/invited y 5–10 tareas cada uno. Contraseña: Test1234!",
+      "reseedButton": "Reiniciar base de datos",
+      "reseedConfirm": "Esto elimina permanentemente todos los usuarios excepto tu cuenta y crea 100 usuarios de prueba con tareas. ¿Continuar?",
+      "reseedSuccessTitle": "Base de datos reiniciada",
+      "reseedSuccessDescription": "Se crearon {{users}} usuarios y {{tasks}} tareas. Inicia sesión como {{email}} con contraseña {{password}}.",
+      "reseedErrorTitle": "Error al reiniciar",
+      "reseedErrorDescription": "Algo salió mal. Inténtalo de nuevo."
     },
     "options": {
       "locale": {
@@ -274,5 +289,78 @@
     "selfHostTitle": "Autoaloja en Cloudflare",
     "selfHostDescription": "Despliegue en un clic en tu cuenta de Workers (D1 incluido).",
     "sourceOnGithub": "Código en GitHub"
+  },
+  "admin": {
+    "title": "Usuarios",
+    "description": "Explora las cuentas, abre un usuario para gestionar su rol y revisa el historial de roles.",
+    "userDetail": {
+      "loading": "Cargando usuario…",
+      "loadFailed": "No se pudo cargar este usuario. Inténtalo de nuevo o vuelve al listado.",
+      "backToUsers": "Volver a usuarios",
+      "profileTitle": "Perfil",
+      "profileDescription": "Datos de la cuenta de este usuario.",
+      "emailVerified": "Correo verificado",
+      "yes": "Sí",
+      "no": "No",
+      "accountUpdated": "Cuenta actualizada",
+      "userId": "ID de usuario",
+      "tasksTitle": "Tareas",
+      "tasksDescription": "Solo el número de tareas — los administradores no pueden ver su contenido.",
+      "taskCountLabel_one": "{{count}} tarea",
+      "taskCountLabel_other": "{{count}} tareas",
+      "roleTitle": "Rol",
+      "roleDescription": "Asigna un rol a este usuario. Los cambios se registran en el historial.",
+      "saveRole": "Guardar rol",
+      "historyTitle": "Historial de roles",
+      "historyDescription": "Cambios de rol recientes de esta cuenta."
+    },
+    "users": {
+      "title": "Todos los usuarios",
+      "description": "Solo los administradores pueden acceder. Los cambios de rol se auditan en user_role_history.",
+      "listDescription": "Selecciona un usuario para ver sus datos y actualizar su rol.",
+      "viewUser": "Ver usuario",
+      "openUser": "Abrir {{name}}",
+      "empty": "No hay usuarios.",
+      "roleLabel": "Rol",
+      "joined": "Registro {{date}}",
+      "roleUpdated": "Rol actualizado {{date}}",
+      "roleNeverSet": "sin rol asignado (por defecto guest)",
+      "columns": {
+        "name": "Nombre",
+        "email": "Correo",
+        "joined": "Registro",
+        "roleUpdated": "Rol actualizado",
+        "actions": "Acciones"
+      },
+      "saveRoleFor": "Guardar rol de {{name}}",
+      "savingRole": "Guardando rol",
+      "searchLabel": "Buscar usuarios",
+      "searchPlaceholder": "Buscar por nombre o correo…",
+      "filterRole": "Rol",
+      "filterRoleAll": "Todos los roles",
+      "resultsCount": "Mostrando {{shown}} de {{total}} usuarios",
+      "resultsRange": "Mostrando {{from}}–{{to}} de {{total}} usuarios",
+      "loading": "Cargando usuarios…",
+      "loadingPage": "Cargando página…",
+      "loadFailed": "No se pudieron cargar los usuarios.",
+      "noResults": "Ningún usuario coincide con la búsqueda o los filtros.",
+      "pageSize": "Filas por página",
+      "pageOf": "Página {{page}} de {{totalPages}}",
+      "firstPage": "Primera",
+      "previousPage": "Anterior",
+      "nextPage": "Siguiente",
+      "lastPage": "Última"
+    },
+    "roles": {
+      "guest": "Invitado",
+      "paid": "De pago",
+      "invited": "Invitado+",
+      "admin": "Administrador"
+    },
+    "toast": {
+      "roleUpdated": "Rol actualizado",
+      "roleUpdateFailed": "No se pudo actualizar el rol",
+      "lastAdmin": "No se puede quitar el último administrador"
+    }
   }
 }

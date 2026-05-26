@@ -1,29 +1,31 @@
-import { useLayoutEffect, useMemo, useRef, type Ref } from 'react'
+import type { Ref } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TaskCalendarItem } from '@/components/tasks/TaskCalendarItem'
 import { WeekdayLabel } from '@/components/tasks/WeekdayLabel'
 import type { TaskListActions } from '@/components/tasks/TaskListItem'
+import type { Task } from '@/lib/task-calendar'
 import {
   getMonthGridDays,
   isSameDay,
   isToday,
   tasksForDay,
-  type Task,
 } from '@/lib/task-calendar'
 import { useFormatters } from '@/providers/AppPreferencesProvider'
+import { isBrowser } from '@/lib/runtime'
 import { cn } from '@/lib/utils'
 
-type MonthCalendarViewProps = {
+type MonthCalendarViewProps = Readonly<{
   year: number
   month: number
   scheduledTasks: Task[]
   actions: TaskListActions
   onTaskSelect: (task: Task) => void
   onDaySelect?: (day: Date) => void
-}
+}>
 
-type MonthDaySectionProps = {
+type MonthDaySectionProps = Readonly<{
   day: Date
   month: number
   scheduledTasks: Task[]
@@ -31,7 +33,7 @@ type MonthDaySectionProps = {
   onTaskSelect: (task: Task) => void
   onDaySelect?: (day: Date) => void
   sectionRef?: Ref<HTMLLIElement>
-}
+}>
 
 function MonthMobileDaySection({
   day,
@@ -52,7 +54,7 @@ function MonthMobileDaySection({
     <li
       ref={sectionRef}
       className={cn(
-        'rounded-lg border border-border/70 bg-card p-3',
+        'rounded-lg border border-border/70 bg-card p-4',
         !inMonth && 'border-dashed bg-muted/15',
         isToday(day) && 'ring-2 ring-primary/40',
       )}
@@ -123,11 +125,10 @@ function MonthDesktopDayCell({
   const dayTasks = tasksForDay(scheduledTasks, day)
   const overflowCount = Math.max(0, dayTasks.length - 3)
   const visibleTasks = dayTasks.slice(0, 3)
-
   return (
     <div
       className={cn(
-        'flex min-h-0 flex-col overflow-hidden rounded-md border border-border/60 p-1',
+        'flex min-h-0 flex-col overflow-hidden rounded-md border border-border/60 p-1.5 md:p-2',
         inMonth ? 'bg-card' : 'bg-muted/20',
         isToday(day) && 'ring-2 ring-primary/40',
       )}
@@ -157,9 +158,16 @@ function MonthDesktopDayCell({
         <button
           type="button"
           className="mt-0.5 shrink-0 px-0.5 text-left text-[10px] font-medium text-primary hover:underline"
-          onClick={() =>
-            onDaySelect ? onDaySelect(day) : onTaskSelect(dayTasks[3]!)
-          }
+          onClick={() => {
+            if (onDaySelect) {
+              onDaySelect(day)
+              return
+            }
+            const overflowTask = dayTasks[3]
+            if (overflowTask) {
+              onTaskSelect(overflowTask)
+            }
+          }}
         >
           {t('calendar:moreTasks', { count: overflowCount })}
         </button>
@@ -196,8 +204,8 @@ export function MonthCalendarView({
   const mobileScrollTargetRef = useRef<HTMLLIElement>(null)
 
   useLayoutEffect(() => {
-    if (typeof window === 'undefined') return
-    if (!window.matchMedia('(max-width: 767px)').matches) return
+    if (!isBrowser()) return
+    if (!globalThis.matchMedia('(max-width: 767px)').matches) return
 
     const target = mobileScrollTargetRef.current
     const container = mobileScrollRef.current
@@ -215,9 +223,9 @@ export function MonthCalendarView({
     <div className="flex h-full min-h-0 flex-col">
       <div
         ref={mobileScrollRef}
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:hidden"
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-1 pb-2 md:hidden"
       >
-        <ul className="m-0 flex list-none flex-col gap-2 p-0 pb-1">
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {mobileDays.length === 0 ? (
             <li className="rounded-lg border border-dashed border-border/70 px-4 py-8 text-center text-sm text-muted-foreground">
               {t('calendar:emptyMonth')}
@@ -243,19 +251,19 @@ export function MonthCalendarView({
         </ul>
       </div>
 
-      <div className="hidden h-full min-h-0 flex-col gap-2 md:flex md:gap-3">
+      <div className="hidden h-full min-h-0 flex-col gap-3 p-2 md:flex md:gap-4 md:p-3">
         <div
-          className="grid shrink-0 grid-cols-7 gap-1 text-center text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          className="grid shrink-0 grid-cols-7 gap-2 text-center text-xs font-medium tracking-wide text-muted-foreground uppercase"
           aria-hidden
         >
           {Array.from({ length: 7 }, (_, index) => (
-            <span key={index} className="py-1">
+            <span key={index} className="py-1.5">
               <WeekdayLabel index={index} />
             </span>
           ))}
         </div>
 
-        <div className="grid min-h-0 flex-1 grid-cols-7 grid-rows-5 gap-1.5">
+        <div className="grid min-h-0 flex-1 grid-cols-7 grid-rows-5 gap-2 md:gap-2.5">
           {days.map((day) => (
             <MonthDesktopDayCell
               key={day.toISOString()}

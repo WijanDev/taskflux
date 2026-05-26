@@ -10,14 +10,16 @@ import { useMemo } from 'react'
 import {
   addDays,
   addMonths,
-  startOfWeekMonday,
-  type TasksViewMode,
+  startOfWeekMonday
+  
 } from '@/lib/task-calendar'
+import type {TasksViewMode} from '@/lib/task-calendar';
 
 export const TASKS_VIEW_MODES = ['monthly', 'weekly', 'daily'] as const
 
-/** Calendar date param in the URL (YYYY-MM-DD). */
-export type CalendarDateParam = string
+export function isTasksViewMode(value: string): value is TasksViewMode {
+  return (TASKS_VIEW_MODES as readonly string[]).includes(value)
+}
 
 export function parseCalendarDateFromString(
   value: string,
@@ -38,7 +40,8 @@ export function parseCalendarDateFromString(
   return date
 }
 
-export function formatCalendarDateParam(date: Date): CalendarDateParam {
+/** URL calendar date (`YYYY-MM-DD`). */
+export function formatCalendarDateParam(date: Date): string {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')
@@ -54,7 +57,7 @@ export const parseAsCalendarDate = createParser({
     const date = parseCalendarDateFromString(value)
     return date ? formatCalendarDateParam(date) : null
   },
-  serialize(value: CalendarDateParam | Date) {
+  serialize(value: string | Date) {
     if (typeof value === 'string') {
       const parsed = parseCalendarDateFromString(value)
       return parsed ? formatCalendarDateParam(parsed) : value
@@ -76,10 +79,21 @@ export const tasksSearchSchema = createStandardSchemaV1(tasksSearchParams, {
 
 export function useTasksUrlState() {
   const [search, setSearch] = useQueryStates(tasksSearchParams)
+
+  function commitSearch(...args: Parameters<typeof setSearch>) {
+    setSearch(...args).catch(() => {})
+  }
+
   const today = useMemo(() => new Date(), [])
   const anchor = useMemo(() => {
-    if (!search.date) return today
-    return parseCalendarDateFromString(search.date) ?? today
+    if (search.date === undefined || search.date === null) {
+      return today
+    }
+    const dateParam =
+      typeof search.date === 'string'
+        ? search.date
+        : formatCalendarDateParam(search.date)
+    return parseCalendarDateFromString(dateParam) ?? today
   }, [search.date, today])
 
   const viewDay = anchor
@@ -88,57 +102,57 @@ export function useTasksUrlState() {
   const viewMonth = anchor.getMonth()
 
   function setViewMode(mode: TasksViewMode) {
-    void setSearch({ view: mode })
+    commitSearch({ view: mode })
   }
 
   function setAnchorDate(date: Date) {
-    void setSearch({ date: formatCalendarDateParam(date) })
+    commitSearch({ date: formatCalendarDateParam(date) })
   }
 
   function setCalendarAnchor(options: {
     view?: TasksViewMode
     date?: Date
   }) {
-    void setSearch({
-      ...(options.view !== undefined ? { view: options.view } : {}),
-      ...(options.date !== undefined
-        ? { date: formatCalendarDateParam(options.date) }
-        : {}),
+    commitSearch({
+      ...(options.view === undefined ? {} : { view: options.view }),
+      ...(options.date === undefined
+        ? {}
+        : { date: formatCalendarDateParam(options.date) }),
     })
   }
 
   function goToPreviousPeriod() {
     if (search.view === 'monthly') {
       const prev = addMonths(viewYear, viewMonth, -1)
-      void setSearch({ date: formatCalendarDateParam(new Date(prev.year, prev.month, 1)) })
+      commitSearch({ date: formatCalendarDateParam(new Date(prev.year, prev.month, 1)) })
       return
     }
     if (search.view === 'weekly') {
-      void setSearch({ date: formatCalendarDateParam(addDays(viewWeekStart, -7)) })
+      commitSearch({ date: formatCalendarDateParam(addDays(viewWeekStart, -7)) })
       return
     }
-    void setSearch({ date: formatCalendarDateParam(addDays(viewDay, -1)) })
+    commitSearch({ date: formatCalendarDateParam(addDays(viewDay, -1)) })
   }
 
   function goToNextPeriod() {
     if (search.view === 'monthly') {
       const next = addMonths(viewYear, viewMonth, 1)
-      void setSearch({ date: formatCalendarDateParam(new Date(next.year, next.month, 1)) })
+      commitSearch({ date: formatCalendarDateParam(new Date(next.year, next.month, 1)) })
       return
     }
     if (search.view === 'weekly') {
-      void setSearch({ date: formatCalendarDateParam(addDays(viewWeekStart, 7)) })
+      commitSearch({ date: formatCalendarDateParam(addDays(viewWeekStart, 7)) })
       return
     }
-    void setSearch({ date: formatCalendarDateParam(addDays(viewDay, 1)) })
+    commitSearch({ date: formatCalendarDateParam(addDays(viewDay, 1)) })
   }
 
   function openTaskId(taskId: number) {
-    void setSearch({ task: taskId })
+    commitSearch({ task: taskId })
   }
 
   function closeTaskId() {
-    void setSearch({ task: null })
+    commitSearch({ task: null })
   }
 
   return {

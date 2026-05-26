@@ -171,8 +171,23 @@ export function getTaskIntervalOnDay(
   const dayStart = startOfDay(day)
   const dayEnd = endOfDay(day)
 
-  let start = task.taskStartAt ?? startOfDay(task.taskEndsAt!)
-  let end = task.taskEndsAt ?? endOfDay(task.taskStartAt!)
+  const startsAt = task.taskStartAt
+  const endsAt = task.taskEndsAt
+
+  let start: Date
+  let end: Date
+  if (startsAt && endsAt) {
+    start = startsAt
+    end = endsAt
+  } else if (startsAt) {
+    start = startsAt
+    end = endOfDay(startsAt)
+  } else if (endsAt) {
+    start = startOfDay(endsAt)
+    end = endsAt
+  } else {
+    return null
+  }
 
   if (start.getTime() < dayStart.getTime()) {
     start = dayStart

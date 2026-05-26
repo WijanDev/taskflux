@@ -4,10 +4,10 @@ import {
 } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
-type DeployToCloudflareLinkProps = {
+type DeployToCloudflareLinkProps = Readonly<{
   className?: string
   imageClassName?: string
-}
+}>
 
 /** Official Cloudflare one-click Workers deploy button. */
 export function DeployToCloudflareLink({

@@ -1,10 +1,8 @@
 import { ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  TaskListItem,
-  type TaskListActions,
-} from '@/components/tasks/TaskListItem'
+import type { TaskListActions } from '@/components/tasks/TaskListItem'
+import { TaskListItem } from '@/components/tasks/TaskListItem'
 import type { Task } from '@/lib/task-calendar'
 import { cn } from '@/lib/utils'
 import {
@@ -14,19 +12,19 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-type UnscheduledTasksPanelProps = {
+type UnscheduledTasksPanelProps = Readonly<{
   tasks: Task[]
   actions: TaskListActions
   className?: string
-}
+}>
 
 function TaskListContent({
   tasks,
   actions,
-}: {
+}: Readonly<{
   tasks: Task[]
   actions: TaskListActions
-}) {
+}>) {
   const { t } = useTranslation('tasks')
 
   if (tasks.length === 0) {

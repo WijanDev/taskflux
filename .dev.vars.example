@@ -1,3 +1,4 @@
 # Copy to .dev.vars for local development (not committed).
 BETTER_AUTH_SECRET=replace-with-at-least-32-character-secret-for-local-dev
 BETTER_AUTH_URL=http://localhost:3000
+ENVIRONMENT=development

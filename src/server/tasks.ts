@@ -72,7 +72,7 @@ export const updateTask = createServerFn({ method: 'POST' })
   .inputValidator((data: TaskUpdateInput) => {
     const title = data.title?.trim()
     if (!title) throw new Error('Title is required')
-    if (!Number.isInteger(data.id)) throw new Error('Invalid task id')
+    if (!Number.isInteger(data.id)) throw new TypeError('Invalid task id')
     const schedule = parseScheduleFields(data)
     return { id: data.id, title, ...schedule }
   })
@@ -100,7 +100,7 @@ export const updateTask = createServerFn({ method: 'POST' })
 
 export const setTaskCompleted = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: number; completed: boolean }) => {
-    if (!Number.isInteger(data.id)) throw new Error('Invalid task id')
+    if (!Number.isInteger(data.id)) throw new TypeError('Invalid task id')
     return { id: data.id, completed: data.completed }
   })
   .handler(async ({ data }) => {
@@ -122,7 +122,7 @@ export const setTaskCompleted = createServerFn({ method: 'POST' })
 
 export const deleteTask = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: number }) => {
-    if (!Number.isInteger(data.id)) throw new Error('Invalid task id')
+    if (!Number.isInteger(data.id)) throw new TypeError('Invalid task id')
     return { id: data.id }
   })
   .handler(async ({ data }) => {

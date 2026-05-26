@@ -5,6 +5,7 @@
 - **App tables:** `src/db/schema.ts` (re-exports modules)
 - **Auth tables:** `src/db/auth-schema.ts` (Better Auth; do not rename casually)
 - **User settings:** `src/db/user-settings-schema.ts` → table `user_settings`
+- **User roles:** `src/db/user-roles-schema.ts` → tables `user_role`, `user_role_history`
 
 ## Access
 
@@ -40,3 +41,17 @@ Follow existing migration style (`--> statement-breakpoint` where used).
 
 Types and validation: `src/lib/user-settings.ts`.  
 Server: `src/server/user-settings.ts` (`getUserSettings`, `updateUserSettings`).
+
+## User roles (reference)
+
+| Table | Purpose |
+|-------|---------|
+| `user_role` | Current role per user (`guest`, `paid`, `invited`, `admin`) |
+| `user_role_history` | Audit trail of role assignments |
+
+Types and validation: `src/lib/roles.ts`.  
+Store: `src/server/user-role-store.ts`.  
+Server: `src/server/user-roles.ts`.  
+Business rules: `.agents/bussiness/roles.md`.
+
+Migration `0005_user_roles` grants **admin** to all users that existed at apply time.

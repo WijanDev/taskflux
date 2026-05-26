@@ -2,12 +2,12 @@ import { TimeGrid } from '@/components/tasks/TimeGrid'
 import type { TaskListActions } from '@/components/tasks/TaskListItem'
 import type { Task } from '@/lib/task-calendar'
 
-type DayTasksViewProps = {
+type DayTasksViewProps = Readonly<{
   day: Date
   scheduledTasks: Task[]
   actions: TaskListActions
   onTaskSelect: (task: Task) => void
-}
+}>
 
 export function DayTasksView({
   day,

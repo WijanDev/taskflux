@@ -1,15 +1,16 @@
+import type { ReactNode } from 'react'
 import {
   createContext,
   useContext,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import '@/lib/i18n'
-import { createFormatters, type AppFormatters } from '@/lib/formatting'
+import type { AppFormatters } from '@/lib/formatting'
+import { createFormatters } from '@/lib/formatting'
 import { readGuestLocale, persistLocale } from '@/lib/i18n/cookies'
 import type { UserSettingsUpdate } from '#/lib/user-settings'
 
@@ -25,10 +26,10 @@ const AppPreferencesContext = createContext<AppPreferencesContextValue | null>(
   null,
 )
 
-type AppPreferencesProviderProps = {
+type AppPreferencesProviderProps = Readonly<{
   initial: UserSettingsUpdate
   children: ReactNode
-}
+}>
 
 export function AppPreferencesProvider({
   initial,
@@ -46,7 +47,7 @@ export function AppPreferencesProvider({
 
   useEffect(() => {
     document.documentElement.lang = preferences.locale
-    void i18n.changeLanguage(preferences.locale)
+    i18n.changeLanguage(preferences.locale).catch(() => {})
     persistLocale(preferences.locale)
   }, [preferences.locale, i18n])
 
